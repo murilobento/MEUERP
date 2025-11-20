@@ -1,0 +1,85 @@
+.roles-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.roles-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.roles-header h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.roles-header p {
+    margin: 0.25rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.roles-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.roles-table th,
+.roles-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.roles-table th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.roles-table tr:last-child td {
+    border-bottom: none;
+}
+
+.roles-table tr:hover td {
+    background: var(--bg-tertiary);
+}
+
+.permission-name {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.module-tag {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.icon-center {
+    margin: 0 auto;
+    display: block;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.text-danger {
+    color: var(--danger);
+}
+
+.text-primary {
+    color: var(--primary);
+}

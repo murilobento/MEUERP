@@ -1,0 +1,352 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== MÓDULO ADMINISTRATIVO ====================
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  avatar    String?
+  status    UserStatus @default(ACTIVE)
+  role      UserRole   @default(VIEWER)
+  
+  departmentId Int?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLogin DateTime?
+  
+  // Relações
+  salesCreated    Sale[]     @relation("SalesCreatedBy")
+  purchasesCreated Purchase[] @relation("PurchasesCreatedBy")
+  
+  @@map("users")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  EDITOR
+  VIEWER
+}
+
+model Department {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  
+  users User[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("departments")
+}
+
+// ==================== MÓDULO FINANCEIRO ====================
+
+model Account {
+  id          Int      @id @default(autoincrement())
+  name        String
+  type        AccountType
+  balance     Decimal  @default(0) @db.Decimal(15, 2)
+  description String?
+  
+  transactions Transaction[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("accounts")
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CASH
+  CREDIT_CARD
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  description String
+  amount      Decimal  @db.Decimal(15, 2)
+  type        TransactionType
+  date        DateTime @default(now())
+  
+  accountId   Int
+  account     Account @relation(fields: [accountId], references: [id])
+
+  categoryId  Int
+  category    TransactionCategory @relation(fields: [categoryId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("transactions")
+}
+
+model TransactionCategory {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  type        TransactionType
+  
+  transactions Transaction[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("transaction_categories")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+// ==================== MÓDULO ESTOQUE ====================
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  cost        Decimal  @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  minStock    Int      @default(0)
+  unit        String   @default("UN")
+  
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  
+  saleItems     SaleItem[]
+  purchaseItems PurchaseItem[]
+  stockMovements StockMovement[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("products")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  
+  products Product[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("categories")
+}
+
+model StockMovement {
+  id          Int      @id @default(autoincrement())
+  type        MovementType
+  quantity    Int
+  reason      String?
+  date        DateTime @default(now())
+  
+  productId   Int
+  product     Product @relation(fields: [productId], references: [id])
+  
+  createdAt DateTime @default(now())
+  
+  @@map("stock_movements")
+}
+
+enum MovementType {
+  IN
+  OUT
+  ADJUSTMENT
+}
+
+// ==================== MÓDULO COMERCIAL ====================
+
+model Customer {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String?  @unique
+  phone       String?
+  document    String?  @unique // CPF/CNPJ
+  type        CustomerType @default(INDIVIDUAL)
+  
+  // Endereço
+  zipCode     String?
+  street      String?
+  number      String?
+  complement  String?
+  neighborhood String?
+  city        String?
+  state       String?
+  
+  sales Sale[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("customers")
+}
+
+enum CustomerType {
+  INDIVIDUAL
+  COMPANY
+}
+
+model Supplier {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String?  @unique
+  phone       String?
+  document    String?  @unique // CNPJ
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  
+  purchases Purchase[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("suppliers")
+}
+
+model Sale {
+  id          Int      @id @default(autoincrement())
+  number      String   @unique
+  date        DateTime @default(now())
+  status      SaleStatus @default(PENDING)
+  
+  subtotal    Decimal  @db.Decimal(15, 2)
+  discount    Decimal  @default(0) @db.Decimal(15, 2)
+  total       Decimal  @db.Decimal(15, 2)
+  
+  notes       String?  @db.Text
+  
+  customerId  Int
+  customer    Customer @relation(fields: [customerId], references: [id])
+  
+  createdById Int
+  createdBy   User @relation("SalesCreatedBy", fields: [createdById], references: [id])
+  
+  items SaleItem[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("sales")
+}
+
+enum SaleStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model SaleItem {
+  id          Int      @id @default(autoincrement())
+  quantity    Int
+  price       Decimal  @db.Decimal(10, 2)
+  subtotal    Decimal  @db.Decimal(15, 2)
+  
+  saleId      Int
+  sale        Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  
+  productId   Int
+  product     Product @relation(fields: [productId], references: [id])
+  
+  @@map("sale_items")
+}
+
+model Purchase {
+  id          Int      @id @default(autoincrement())
+  number      String   @unique
+  date        DateTime @default(now())
+  status      PurchaseStatus @default(PENDING)
+  
+  subtotal    Decimal  @db.Decimal(15, 2)
+  discount    Decimal  @default(0) @db.Decimal(15, 2)
+  total       Decimal  @db.Decimal(15, 2)
+  
+  notes       String?  @db.Text
+  
+  supplierId  Int
+  supplier    Supplier @relation(fields: [supplierId], references: [id])
+  
+  createdById Int
+  createdBy   User @relation("PurchasesCreatedBy", fields: [createdById], references: [id])
+  
+  items PurchaseItem[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("purchases")
+}
+
+enum PurchaseStatus {
+  PENDING
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseItem {
+  id          Int      @id @default(autoincrement())
+  quantity    Int
+  price       Decimal  @db.Decimal(10, 2)
+  subtotal    Decimal  @db.Decimal(15, 2)
+  
+  purchaseId  Int
+  purchase    Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  
+  productId   Int
+  product     Product @relation(fields: [productId], references: [id])
+  
+  @@map("purchase_items")
+}
+
+// ==================== CONFIGURAÇÕES ====================
+
+model Company {
+  id          Int      @id @default(autoincrement())
+  name        String
+  cnpj        String?
+  email       String?
+  phone       String?
+  website     String?
+  
+  // Endereço
+  street      String?
+  number      String?
+  complement  String?
+  neighborhood String?
+  city        String?
+  state       String?
+  zipCode     String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("company_settings")
+}
