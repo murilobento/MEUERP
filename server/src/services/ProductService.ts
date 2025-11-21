@@ -57,19 +57,16 @@ export class ProductService {
     }
 
     async update(id: number, data: any): Promise<Product> {
-        // Remove relational fields that shouldn't be in the update
-        const { category, supplier, createdAt, updatedAt, ...updateData } = data;
-
         return prisma.product.update({
             where: { id },
             data: {
-                ...updateData,
-                price: data.price !== undefined ? parseFloat(data.price) : undefined,
-                cost: data.cost !== undefined ? parseFloat(data.cost) : undefined,
-                width: data.width !== undefined ? parseFloat(data.width) : undefined,
-                height: data.height !== undefined ? parseFloat(data.height) : undefined,
-                length: data.length !== undefined ? parseFloat(data.length) : undefined,
-                weight: data.weight !== undefined ? parseFloat(data.weight) : undefined,
+                ...data,
+                price: data.price ? parseFloat(data.price) : undefined,
+                cost: data.cost ? parseFloat(data.cost) : undefined,
+                width: data.width ? parseFloat(data.width) : undefined,
+                height: data.height ? parseFloat(data.height) : undefined,
+                length: data.length ? parseFloat(data.length) : undefined,
+                weight: data.weight ? parseFloat(data.weight) : undefined,
             },
         });
     }

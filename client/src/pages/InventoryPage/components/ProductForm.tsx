@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Product, Category } from '../../../types';
 import { categoryService } from '../../../services/categoryService';
 import { Save, Upload, Package, DollarSign, FileText, Image as ImageIcon } from 'lucide-react';
+import SupplierAutocomplete from './SupplierAutocomplete';
 import './ProductForm.css';
 
 interface ProductFormProps {
@@ -170,13 +171,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                         <div className="form-grid-2">
                             <div className="form-group">
                                 <label>Fornecedor Principal</label>
-                                <select
-                                    className="select"
+                                <SupplierAutocomplete
                                     value={formData.supplierId || ''}
-                                    onChange={(e) => handleChange('supplierId', Number(e.target.value))}
-                                >
-                                    <option value="">Selecione...</option>
-                                </select>
+                                    onChange={(val) => handleChange('supplierId', val === '' ? undefined : val)}
+                                />
                             </div>
                             <div className="form-group">
                                 <label>Unidade</label>

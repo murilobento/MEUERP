@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, List } from 'lucide-react';
+import { Plus, Edit2, Trash2, List, Eye } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { productService } from '../../services/productService';
 import type { Product, ProductFilters } from '../../types';
@@ -8,6 +8,7 @@ import DataTable, { type Column } from '../../components/DataTable/DataTable';
 import { Sheet } from '../../components/ui/Sheet/Sheet';
 import { AlertDialog } from '../../components/ui/AlertDialog/AlertDialog';
 import { ProductForm, CategoryManager } from './components';
+import ProductDetail from './components/ProductDetail';
 import './InventoryPage.css';
 
 const InventoryPage: React.FC = () => {
@@ -25,6 +26,8 @@ const InventoryPage: React.FC = () => {
 
     // Modal States
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [detailProduct, setDetailProduct] = useState<Product | null>(null);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,12 +74,17 @@ const InventoryPage: React.FC = () => {
         setIsProductModalOpen(true);
     };
 
-    const handleEdit = (product: Product, e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleEdit = (product: Product, e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
         setSelectedProduct(product);
         setIsProductModalOpen(true);
     };
 
+    const handleView = (product: Product, e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        setDetailProduct(product);
+        setIsDetailOpen(true);
+    };
     const handleDeleteClick = (product: Product, e: React.MouseEvent) => {
         e.stopPropagation();
         setProductToDelete(product);
@@ -218,6 +226,9 @@ const InventoryPage: React.FC = () => {
             header: 'AÇÕES',
             render: (product) => (
                 <div className="actions-cell">
+                    <button className="icon-btn" title="Visualizar" onClick={(e) => handleView(product, e)}>
+                        <Eye size={16} />
+                    </button>
                     <button className="icon-btn" title="Editar" onClick={(e) => handleEdit(product, e)}>
                         <Edit2 size={16} />
                     </button>
@@ -278,7 +289,7 @@ const InventoryPage: React.FC = () => {
                 onPageChange={setPage}
                 isLoading={loading}
                 emptyMessage="Nenhum produto encontrado."
-                onRowClick={(product) => handleEdit(product, {} as any)}
+                onRowClick={(product) => handleView(product)}
             />
 
             <Sheet
@@ -293,6 +304,20 @@ const InventoryPage: React.FC = () => {
                     onCancel={() => setIsProductModalOpen(false)}
                     loading={isSubmitting}
                 />
+            </Sheet>
+            {/* Detail view sheet */}
+            <Sheet
+                isOpen={isDetailOpen}
+                onClose={() => setIsDetailOpen(false)}
+                title="Detalhes do Produto"
+                size="lg"
+            >
+                {detailProduct && (
+                    <ProductDetail
+                        product={detailProduct}
+                        onClose={() => setIsDetailOpen(false)}
+                    />
+                )}
             </Sheet>
 
             <CategoryManager
