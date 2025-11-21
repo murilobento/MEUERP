@@ -16,7 +16,8 @@ import {
     CreditCard,
     BarChart3,
     ClipboardList,
-    Shield
+    Shield,
+    Trello
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLayout } from '../../contexts/LayoutContext';
@@ -151,6 +152,15 @@ const Sidebar: React.FC = () => {
                     >
                         <LayoutDashboard size={20} />
                         {sidebarOpen && <span>Painel Principal</span>}
+                    </NavLink>
+
+                    <NavLink
+                        to="/kanban"
+                        className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                        title={!sidebarOpen ? 'Kanban' : ''}
+                    >
+                        <Trello size={20} />
+                        {sidebarOpen && <span>Kanban</span>}
                     </NavLink>
                 </div>
 

@@ -4,6 +4,8 @@ import userRoutes from './userRoutes';
 import departmentRoutes from './departmentRoutes';
 import companyRoutes from './companyRoutes';
 import customerRoutes from './customerRoutes';
+import boardRoutes from './boardRoutes';
+import cardRoutes from './cardRoutes';
 
 const router = Router();
 
@@ -13,6 +15,8 @@ router.use('/users', userRoutes);
 router.use('/departments', departmentRoutes);
 router.use('/company', companyRoutes);
 router.use('/customers', customerRoutes);
+router.use('/boards', boardRoutes);
+router.use('/cards', cardRoutes);
 
 // Health check
 router.get('/health', (req, res) => {

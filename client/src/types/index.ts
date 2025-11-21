@@ -83,3 +83,73 @@ export interface CustomerFilters {
     page?: number;
     limit?: number;
 }
+
+// ==================== KANBAN TYPES ====================
+
+export type CardPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
+export interface Card {
+    id: number;
+    title: string;
+    description?: string;
+    position: number;
+    priority: CardPriority;
+    dueDate?: string;
+    columnId: number;
+    assignedToId?: number;
+    assignedTo?: {
+        id: number;
+        name: string;
+        email: string;
+        avatar?: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Column {
+    id: number;
+    title: string;
+    position: number;
+    color: string;
+    boardId: number;
+    cards: Card[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Board {
+    id: number;
+    title: string;
+    description?: string;
+    color: string;
+    columns: Column[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateBoardData {
+    title: string;
+    description?: string;
+    color?: string;
+}
+
+export interface CreateColumnData {
+    title: string;
+    color?: string;
+}
+
+export interface CreateCardData {
+    title: string;
+    description?: string;
+    columnId: number;
+    priority?: CardPriority;
+    dueDate?: string;
+    assignedToId?: number;
+}
+
+export interface MoveCardData {
+    targetColumnId: number;
+    targetPosition: number;
+}
+

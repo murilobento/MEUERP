@@ -31,6 +31,7 @@ model User {
   // Relações
   salesCreated    Sale[]     @relation("SalesCreatedBy")
   purchasesCreated Purchase[] @relation("PurchasesCreatedBy")
+  assignedCards   Card[]
   
   @@map("users")
 }
@@ -355,4 +356,64 @@ model Company {
   updatedAt   DateTime @updatedAt
 
   @@map("company_settings")
+}
+
+// ==================== MÓDULO KANBAN ====================
+
+model Board {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  color       String   @default("#6366f1") // Cor do board
+  
+  columns     Column[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("boards")
+}
+
+model Column {
+  id          Int      @id @default(autoincrement())
+  title       String
+  position    Int      // Ordem da coluna no board
+  color       String   @default("#64748b")
+  
+  boardId     Int
+  board       Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  
+  cards       Card[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("columns")
+}
+
+model Card {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?  @db.Text
+  position    Int      // Ordem do card na coluna
+  priority    CardPriority @default(MEDIUM)
+  dueDate     DateTime?
+  
+  columnId    Int
+  column      Column   @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  
+  assignedToId Int?
+  assignedTo   User?   @relation(fields: [assignedToId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("cards")
+}
+
+enum CardPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }
