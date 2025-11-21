@@ -9,6 +9,7 @@ import MainLayout from './layouts/MainLayout';
 import LoginPage from './pages/LoginPage/LoginPage';
 import UsersPage from './pages/UsersPage/UsersPage';
 import CustomersPage from './pages/CustomersPage/CustomersPage';
+import SalesOrdersPage from './pages/SalesOrdersPage/SalesOrdersPage';
 import SuppliersPage from './pages/SuppliersPage/SuppliersPage';
 import CompanySettings from './pages/Admin/Settings/CompanySettings';
 import RolesPage from './pages/Admin/Roles/RolesPage';
@@ -48,6 +49,7 @@ const App: React.FC = () => {
                 <Route path="estoque/fornecedores" element={<SuppliersPage />} />
                 <Route path="estoque/*" element={<Navigate to="/estoque/inventario" replace />} />
                 <Route path="comercial/clientes" element={<CustomersPage />} />
+                <Route path="comercial/vendas" element={<SalesOrdersPage />} />
                 <Route path="comercial/*" element={<div className="card">Módulo Comercial em desenvolvimento</div>} />
                 <Route path="kanban" element={<KanbanPage />} />
                 <Route path="configuracoes" element={<div className="card">Configurações em desenvolvimento</div>} />

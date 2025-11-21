@@ -282,6 +282,7 @@ model Sale {
   subtotal    Decimal  @db.Decimal(15, 2)
   discount    Decimal  @default(0) @db.Decimal(15, 2)
   total       Decimal  @db.Decimal(15, 2)
+  paymentMethod PaymentMethod?
   
   notes       String?  @db.Text
   
@@ -303,6 +304,14 @@ enum SaleStatus {
   PENDING
   CONFIRMED
   CANCELLED
+}
+
+enum PaymentMethod {
+  DEBIT_CARD
+  CREDIT_CARD
+  CASH
+  PIX
+  BOLETO
 }
 
 model SaleItem {

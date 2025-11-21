@@ -45,6 +45,7 @@
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 /* Custom Select Styles */
@@ -67,6 +68,8 @@
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.875rem;
+    height: 42px;
+    /* Fixed height for alignment */
 }
 
 .filter-select-trigger:hover {
@@ -137,6 +140,58 @@
     font-weight: 500;
 }
 
+/* Date Range Inputs Styles */
+.date-range-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-tertiary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    height: 42px;
+    /* Match height with select triggers */
+}
+
+.date-range-inputs:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.filter-date-input {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    padding: 0.25rem;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
+.filter-date-input:focus {
+    color: var(--primary);
+}
+
+/* Remove default calendar icon in some browsers if desired, or style it */
+.filter-date-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    filter: invert(var(--calendar-icon-invert));
+    /* Adjust based on theme */
+}
+
+.filter-date-input:hover::-webkit-calendar-picker-indicator {
+    opacity: 1;
+}
+
+.date-separator {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0 0.25rem;
+}
+
 .clear-filters-btn {
     display: flex;
     align-items: center;
@@ -149,6 +204,8 @@
     cursor: pointer;
     font-size: 0.875rem;
     transition: all 0.2s;
+    height: 42px;
+    /* Fixed height for alignment */
 }
 
 .clear-filters-btn:hover {
@@ -181,5 +238,10 @@
 
     .filter-select-container {
         flex: 1;
+    }
+
+    .date-range-inputs {
+        width: 100%;
+        justify-content: center;
     }
 }

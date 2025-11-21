@@ -121,7 +121,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
         { label: 'Ontem', value: 'yesterday' },
         { label: 'Mês Atual', value: 'thisMonth' },
         { label: 'Mês Anterior', value: 'lastMonth' },
-        { label: 'Personalizado...', value: 'custom' },
+        { label: 'Personalizado', value: 'custom' },
     ];
 
     return (
@@ -153,6 +153,25 @@ const FilterBar: React.FC<FilterBarProps> = ({
                         options={dateOptions}
                         onChange={handleDateChange}
                     />
+                )}
+
+                {/* Render date inputs if 'custom' is selected or if onDateRangeChange is provided without onDateFilter (optional usage) */}
+                {selectedDateRange === 'custom' && onDateFilter && (
+                    <div className="date-range-inputs">
+                        <input
+                            type="date"
+                            className="filter-date-input"
+                            onChange={(e) => onDateFilter(`custom_start:${e.target.value}`)}
+                            placeholder="De"
+                        />
+                        <span className="date-separator">até</span>
+                        <input
+                            type="date"
+                            className="filter-date-input"
+                            onChange={(e) => onDateFilter(`custom_end:${e.target.value}`)}
+                            placeholder="Até"
+                        />
+                    </div>
                 )}
 
                 {(searchTerm || selectedStatus !== 'all' || selectedDateRange !== 'all') && (

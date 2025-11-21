@@ -226,8 +226,53 @@ export interface Product {
     updatedAt: string;
 }
 
+
 export interface ProductFilters {
     search?: string;
     status?: ProductStatus;
     categoryId?: number;
+}
+
+// ==================== SALES TYPES ====================
+
+export type SaleStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+
+export type PaymentMethod = 'DEBIT_CARD' | 'CREDIT_CARD' | 'CASH' | 'PIX' | 'BOLETO';
+
+export interface SaleItem {
+    id: number;
+    quantity: number;
+    price: number;
+    subtotal: number;
+    saleId: number;
+    productId: number;
+    product: Product;
+}
+
+export interface Sale {
+    id: number;
+    number: string;
+    date: string;
+    status: SaleStatus;
+    subtotal: number;
+    discount: number;
+    total: number;
+    paymentMethod?: PaymentMethod;
+    notes?: string;
+    customerId: number;
+    customer: Customer;
+    createdById: number;
+    createdBy?: User;
+    items: SaleItem[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface SaleFilters {
+    search?: string;
+    status?: SaleStatus;
+    page?: number;
+    limit?: number;
+    startDate?: string;
+    endDate?: string;
 }
