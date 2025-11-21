@@ -125,7 +125,7 @@ enum TransactionType {
 
 model Product {
   id          Int      @id @default(autoincrement())
-  code        String   @unique
+  code        String?  @unique
   name        String
   description String?
   price       Decimal  @db.Decimal(10, 2)
@@ -134,8 +134,20 @@ model Product {
   minStock    Int      @default(0)
   unit        String   @default("UN")
   
+  barcode     String?
+  status      ProductStatus @default(ACTIVE)
+  imageUrl    String?
+  
+  width       Decimal? @db.Decimal(10, 2)
+  height      Decimal? @db.Decimal(10, 2)
+  length      Decimal? @db.Decimal(10, 2)
+  weight      Decimal? @db.Decimal(10, 2)
+
   categoryId  Int?
   category    Category? @relation(fields: [categoryId], references: [id])
+  
+  supplierId  Int?
+  supplier    Supplier? @relation(fields: [supplierId], references: [id])
   
   saleItems     SaleItem[]
   purchaseItems PurchaseItem[]
@@ -145,6 +157,11 @@ model Product {
   updatedAt DateTime @updatedAt
   
   @@map("products")
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
 }
 
 model Category {
@@ -231,6 +248,7 @@ model Supplier {
   zipCode     String?
   
   purchases Purchase[]
+  products  Product[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

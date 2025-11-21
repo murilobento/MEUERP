@@ -152,3 +152,53 @@ export interface MoveCardData {
     targetPosition: number;
 }
 
+
+// ==================== INVENTORY TYPES ====================
+
+export interface Category {
+    id: number;
+    name: string;
+    description?: string;
+    _count?: {
+        products: number;
+    };
+    createdAt: string;
+    updatedAt: string;
+}
+
+export type ProductStatus = 'ACTIVE' | 'INACTIVE';
+
+export interface Product {
+    id: number;
+    code?: string;
+    barcode?: string;
+    name: string;
+    description?: string;
+    price: number;
+    cost: number;
+    stock: number;
+    minStock: number;
+    unit: string;
+    status: ProductStatus;
+    imageUrl?: string;
+
+    width?: number;
+    height?: number;
+    length?: number;
+    weight?: number;
+
+    categoryId?: number;
+    category?: Category;
+
+    supplierId?: number;
+    // supplier?: Supplier; // Define Supplier if needed
+
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ProductFilters {
+    search?: string;
+    status?: ProductStatus;
+    categoryId?: number;
+}

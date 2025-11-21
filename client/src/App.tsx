@@ -12,6 +12,7 @@ import CustomersPage from './pages/CustomersPage/CustomersPage';
 import CompanySettings from './pages/Admin/Settings/CompanySettings';
 import RolesPage from './pages/Admin/Roles/RolesPage';
 import { KanbanPage } from './pages/KanbanPage/KanbanPage';
+import InventoryPage from './pages/InventoryPage/InventoryPage';
 
 const App: React.FC = () => {
   return (
@@ -42,7 +43,8 @@ const App: React.FC = () => {
 
                 {/* Placeholder para outras rotas */}
                 <Route path="financeiro/*" element={<div className="card">Módulo Financeiro em desenvolvimento</div>} />
-                <Route path="estoque/*" element={<div className="card">Módulo Estoque em desenvolvimento</div>} />
+                <Route path="estoque/inventario" element={<InventoryPage />} />
+                <Route path="estoque/*" element={<Navigate to="/estoque/inventario" replace />} />
                 <Route path="comercial/clientes" element={<CustomersPage />} />
                 <Route path="comercial/*" element={<div className="card">Módulo Comercial em desenvolvimento</div>} />
                 <Route path="kanban" element={<KanbanPage />} />
