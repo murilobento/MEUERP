@@ -1,0 +1,148 @@
+/* client/src/pages/SuppliersPage/SuppliersPage.css */
+.suppliers-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 250px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 0.875rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-secondary);
+}
+
+.search-box input {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 0.625rem 0;
+    color: var(--text-primary);
+}
+
+.search-box input:focus {
+    outline: none;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.supplier-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.supplier-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--info-light);
+    color: var(--info);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.supplier-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.supplier-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.supplier-type {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.2;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.phone-text {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.icon-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.delete-btn:hover {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+    }
+
+    .suppliers-filters {
+        flex-direction: column;
+    }
+
+    .search-box {
+        min-width: 100%;
+    }
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+}
+
+.status-badge.active {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.status-badge.inactive {
+    background: var(--danger-light);
+    color: var(--danger);
+}

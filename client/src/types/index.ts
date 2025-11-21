@@ -83,6 +83,35 @@ export interface CustomerFilters {
     limit?: number;
 }
 
+export type SupplierType = 'INDIVIDUAL' | 'COMPANY';
+
+export interface Supplier {
+    id: number;
+    name: string;
+    email?: string;
+    phone?: string;
+    document?: string;
+    status: 'ACTIVE' | 'INACTIVE';
+    type: SupplierType;
+    zipCode?: string;
+    street?: string;
+    number?: string;
+    complement?: string;
+    neighborhood?: string;
+    city?: string;
+    state?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface SupplierFilters {
+    search?: string;
+    status?: 'ACTIVE' | 'INACTIVE';
+    page?: number;
+    limit?: number;
+}
+
+
 // ==================== KANBAN TYPES ====================
 
 export type CardPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';

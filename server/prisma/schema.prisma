@@ -241,11 +241,18 @@ model Supplier {
   name        String
   email       String?  @unique
   phone       String?
-  document    String?  @unique // CNPJ
-  address     String?
+  document    String?  @unique // CPF/CNPJ
+  type        SupplierType @default(COMPANY)
+  status      SupplierStatus @default(ACTIVE)
+  
+  // Endereço
+  zipCode     String?
+  street      String?
+  number      String?
+  complement  String?
+  neighborhood String?
   city        String?
   state       String?
-  zipCode     String?
   
   purchases Purchase[]
   products  Product[]
@@ -254,6 +261,16 @@ model Supplier {
   updatedAt DateTime @updatedAt
   
   @@map("suppliers")
+}
+
+enum SupplierType {
+  INDIVIDUAL
+  COMPANY
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
 }
 
 model Sale {
