@@ -21,8 +21,7 @@ model User {
   status    UserStatus @default(ACTIVE)
   role      UserRole   @default(VIEWER)
   
-  departmentId Int?
-  department   Department? @relation(fields: [departmentId], references: [id])
+  departments Department[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Lock, Shield } from 'lucide-react';
-import type { User as UserType } from '../../types/index';
+import Select from 'react-select';
+import type { User as UserType, Department } from '../../types/index';
 import { Switch } from '../../components/ui/Switch/Switch';
+import { departmentService } from '../../services/departmentService';
 import './UserForm.css';
 
 interface UserFormProps {
@@ -17,14 +19,27 @@ const UserForm: React.FC<UserFormProps> = ({
     onCancel,
     loading = false,
 }) => {
+    const [departments, setDepartments] = useState<Department[]>([]);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         role: 'VIEWER',
-        departmentId: '',
+        departmentIds: [] as string[],
         status: 'ACTIVE',
     });
+
+    useEffect(() => {
+        const loadDepartments = async () => {
+            try {
+                const data = await departmentService.getAll();
+                setDepartments(data);
+            } catch (error) {
+                console.error('Erro ao carregar departamentos:', error);
+            }
+        };
+        loadDepartments();
+    }, []);
 
     useEffect(() => {
         if (initialData) {
@@ -33,7 +48,7 @@ const UserForm: React.FC<UserFormProps> = ({
                 email: initialData.email,
                 password: '',
                 role: initialData.role,
-                departmentId: initialData.department?.id?.toString() || '',
+                departmentIds: initialData.departments?.map(d => d.id.toString()) || [],
                 status: initialData.status,
             });
         }
@@ -44,13 +59,88 @@ const UserForm: React.FC<UserFormProps> = ({
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleDepartmentChange = (selectedOptions: any) => {
+        const selectedIds = selectedOptions ? selectedOptions.map((option: any) => option.value) : [];
+        setFormData(prev => ({ ...prev, departmentIds: selectedIds }));
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const dataToSubmit = {
+        const dataToSubmit: any = {
             ...formData,
-            departmentId: formData.departmentId ? Number(formData.departmentId) : undefined
+            departmentIds: formData.departmentIds.map(Number)
         };
+
+        if (!dataToSubmit.password) {
+            delete dataToSubmit.password;
+        }
+
         onSubmit(dataToSubmit);
+    };
+
+    const departmentOptions = departments.map(dept => ({
+        value: dept.id.toString(),
+        label: dept.name
+    }));
+
+    const selectedDepartments = departmentOptions.filter(option =>
+        formData.departmentIds.includes(option.value)
+    );
+
+    const customStyles = {
+        control: (provided: any) => ({
+            ...provided,
+            backgroundColor: 'var(--bg-secondary)',
+            borderColor: 'var(--border-color)',
+            minHeight: '42px',
+            boxShadow: 'none',
+            '&:hover': {
+                borderColor: 'var(--primary-color)'
+            }
+        }),
+        menu: (provided: any) => ({
+            ...provided,
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1px solid var(--border-color)',
+            zIndex: 50
+        }),
+        option: (provided: any, state: any) => ({
+            ...provided,
+            backgroundColor: state.isSelected
+                ? 'var(--primary-color)'
+                : state.isFocused
+                    ? 'var(--bg-tertiary)'
+                    : 'transparent',
+            color: state.isSelected ? '#fff' : 'var(--text-primary)',
+            cursor: 'pointer',
+            ':active': {
+                backgroundColor: 'var(--primary-color)'
+            }
+        }),
+        multiValue: (provided: any) => ({
+            ...provided,
+            backgroundColor: 'var(--bg-tertiary)',
+        }),
+        multiValueLabel: (provided: any) => ({
+            ...provided,
+            color: 'var(--text-primary)',
+        }),
+        multiValueRemove: (provided: any) => ({
+            ...provided,
+            color: 'var(--text-secondary)',
+            ':hover': {
+                backgroundColor: 'var(--danger-color)',
+                color: 'white',
+            },
+        }),
+        input: (provided: any) => ({
+            ...provided,
+            color: 'var(--text-primary)',
+        }),
+        singleValue: (provided: any) => ({
+            ...provided,
+            color: 'var(--text-primary)',
+        }),
     };
 
     return (
@@ -121,6 +211,22 @@ const UserForm: React.FC<UserFormProps> = ({
                             <option value="VIEWER">Visualizador</option>
                         </select>
                     </div>
+                </div>
+
+                <div className="form-group span-2">
+                    <label>Departamentos</label>
+                    <Select
+                        isMulti
+                        name="departments"
+                        options={departmentOptions}
+                        value={selectedDepartments}
+                        onChange={handleDepartmentChange}
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        placeholder="Selecione..."
+                        styles={customStyles}
+                        noOptionsMessage={() => "Nenhum departamento encontrado"}
+                    />
                 </div>
 
                 <div className="form-group span-2">

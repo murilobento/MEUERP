@@ -211,8 +211,16 @@ const UsersPage: React.FC = () => {
         },
         {
             key: 'department',
-            header: 'DEPARTAMENTO',
-            render: (user) => user.department?.name || '-'
+            header: 'DEPARTAMENTOS',
+            render: (user) => {
+                if (!user.departments || user.departments.length === 0) return '-';
+                if (user.departments.length === 1) return user.departments[0].name;
+                return (
+                    <span title={user.departments.map(d => d.name).join(', ')}>
+                        {user.departments[0].name} +{user.departments.length - 1}
+                    </span>
+                );
+            }
         },
         {
             key: 'lastLogin',

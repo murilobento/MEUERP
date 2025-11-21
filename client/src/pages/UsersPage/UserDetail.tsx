@@ -55,8 +55,12 @@ const UserDetail: React.FC<UserDetailProps> = ({ user }) => {
                     <div className="detail-item">
                         <Building size={18} className="text-secondary" />
                         <div>
-                            <label>Departamento</label>
-                            <p>{user.department?.name || 'Não atribuído'}</p>
+                            <label>Departamentos</label>
+                            <p>
+                                {user.departments && user.departments.length > 0
+                                    ? user.departments.map(d => d.name).join(', ')
+                                    : 'Não atribuído'}
+                            </p>
                         </div>
                     </div>
                 </div>

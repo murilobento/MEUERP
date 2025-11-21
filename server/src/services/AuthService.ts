@@ -8,7 +8,7 @@ export class AuthService {
     async login(email: string, password: string) {
         const user = await prisma.user.findUnique({
             where: { email },
-            include: { department: true },
+            include: { departments: true },
         });
 
         if (!user) {
@@ -50,7 +50,7 @@ export class AuthService {
         password: string;
         name: string;
         role?: string;
-        departmentId?: number;
+        departmentIds?: number[];
     }) {
         const existingUser = await prisma.user.findUnique({
             where: { email: data.email },
@@ -62,20 +62,20 @@ export class AuthService {
 
         const hashedPassword = await hashPassword(data.password);
 
-        const { departmentId, role, ...userData } = data;
+        const { departmentIds, role, ...userData } = data;
 
         const user = await prisma.user.create({
             data: {
                 ...userData,
                 password: hashedPassword,
                 ...(role && { role: role as UserRole }),
-                ...(departmentId && {
-                    department: {
-                        connect: { id: departmentId },
+                ...(departmentIds && {
+                    departments: {
+                        connect: departmentIds.map(id => ({ id })),
                     },
                 }),
             },
-            include: { department: true },
+            include: { departments: true },
         });
 
         const { password: _, ...userWithoutPassword } = user;
@@ -86,7 +86,7 @@ export class AuthService {
     async me(userId: number) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            include: { department: true },
+            include: { departments: true },
         });
 
         if (!user) {

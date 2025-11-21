@@ -5,8 +5,7 @@ export interface User {
     avatar?: string;
     status: 'ACTIVE' | 'INACTIVE';
     role: 'ADMIN' | 'MANAGER' | 'EDITOR' | 'VIEWER';
-    departmentId?: number;
-    department?: Department;
+    departments?: Department[];
     createdAt: string;
     updatedAt: string;
     lastLogin?: string;

@@ -27,7 +27,11 @@ export class UserService {
         }
 
         if (filters?.departmentId) {
-            where.departmentId = filters.departmentId;
+            where.departments = {
+                some: {
+                    id: filters.departmentId
+                }
+            };
         }
 
         if (filters?.search) {
@@ -40,7 +44,7 @@ export class UserService {
         const [users, total] = await Promise.all([
             prisma.user.findMany({
                 where,
-                include: { department: true },
+                include: { departments: true },
                 skip,
                 take: limit,
                 orderBy: { createdAt: 'desc' },
@@ -64,7 +68,7 @@ export class UserService {
     async getById(id: number) {
         const user = await prisma.user.findUnique({
             where: { id },
-            include: { department: true },
+            include: { departments: true },
         });
 
         if (!user) {
@@ -81,7 +85,7 @@ export class UserService {
         password: string;
         name: string;
         role?: string;
-        departmentId?: number;
+        departmentIds?: number[];
         avatar?: string;
     }) {
         const existingUser = await prisma.user.findUnique({
@@ -94,20 +98,20 @@ export class UserService {
 
         const hashedPassword = await hashPassword(data.password);
 
-        const { departmentId, role, ...userData } = data;
+        const { departmentIds, role, ...userData } = data;
 
         const user = await prisma.user.create({
             data: {
                 ...userData,
                 password: hashedPassword,
                 ...(role && { role: role as UserRole }),
-                ...(departmentId && {
-                    department: {
-                        connect: { id: departmentId },
+                ...(departmentIds && {
+                    departments: {
+                        connect: departmentIds.map(id => ({ id })),
                     },
                 }),
             },
-            include: { department: true },
+            include: { departments: true },
         });
 
         const { password, ...userWithoutPassword } = user;
@@ -118,9 +122,10 @@ export class UserService {
     async update(id: number, data: {
         name?: string;
         email?: string;
+        password?: string;
         role?: string;
         status?: string;
-        departmentId?: number;
+        departmentIds?: number[];
         avatar?: string;
     }) {
         const user = await prisma.user.findUnique({ where: { id } });
@@ -139,24 +144,30 @@ export class UserService {
             }
         }
 
-        const { departmentId, role, status, ...updateData } = data;
+        const { departmentIds, role, status, password, ...updateData } = data;
+
+        let hashedPassword;
+        if (password) {
+            hashedPassword = await hashPassword(password);
+        }
 
         const updatedUser = await prisma.user.update({
             where: { id },
             data: {
                 ...updateData,
+                ...(password && { password: hashedPassword }),
                 ...(role && { role: role as UserRole }),
                 ...(status && { status: status as UserStatus }),
-                ...(departmentId && {
-                    department: {
-                        connect: { id: departmentId },
+                ...(departmentIds && {
+                    departments: {
+                        set: departmentIds.map(id => ({ id })),
                     },
                 }),
             },
-            include: { department: true },
+            include: { departments: true },
         });
 
-        const { password, ...userWithoutPassword } = updatedUser;
+        const { password: _, ...userWithoutPassword } = updatedUser;
 
         return userWithoutPassword;
     }

@@ -46,6 +46,10 @@
     /* Espaço para o ícone */
 }
 
+
+
+
+
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -63,5 +67,9 @@
 
     .span-2 {
         grid-column: span 1;
+    }
+
+    .form-row-split {
+        grid-template-columns: 1fr;
     }
 }
