@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
-import { Plus, Edit2, Trash2, Eye, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye } from 'lucide-react';
 import type { Column } from '../../components/DataTable/DataTable';
 import DataTable from '../../components/DataTable/DataTable';
 import { Sheet } from '../../components/ui/Sheet/Sheet';
@@ -10,6 +10,7 @@ import { customerService } from '../../services/customerService';
 import type { Customer, CustomerFilters } from '../../types';
 import CustomerForm from './CustomerForm';
 import CustomerDetail from './CustomerDetail';
+import FilterBar from '../../components/FilterBar/FilterBar';
 import './CustomersPage.css';
 
 const CustomersPage: React.FC = () => {
@@ -50,9 +51,7 @@ const CustomersPage: React.FC = () => {
         loadCustomers();
     }, [loadCustomers]);
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFilters(prev => ({ ...prev, search: e.target.value, page: 1 }));
-    };
+
 
     const handlePageChange = (page: number) => {
         setFilters(prev => ({ ...prev, page }));
@@ -244,17 +243,20 @@ const CustomersPage: React.FC = () => {
                 </button>
             </div>
 
-            <div className="customers-filters">
-                <div className="search-box">
-                    <Search size={18} />
-                    <input
-                        type="text"
-                        placeholder="Buscar por nome, documento ou email..."
-                        value={filters.search}
-                        onChange={handleSearch}
-                    />
-                </div>
-            </div>
+            <FilterBar
+                onSearch={(term) => {
+                    setFilters(prev => ({ ...prev, search: term, page: 1 }));
+                }}
+                onStatusFilter={(status) => {
+                    setFilters(prev => ({ ...prev, status: status === 'all' ? undefined : status as 'ACTIVE' | 'INACTIVE', page: 1 }));
+                }}
+                statusOptions={[
+                    { label: 'Todos', value: 'all' },
+                    { label: 'Ativo', value: 'ACTIVE' },
+                    { label: 'Inativo', value: 'INACTIVE' },
+                ]}
+                placeholder="Buscar por nome, documento ou email..."
+            />
 
             <div className="table-container">
                 <DataTable

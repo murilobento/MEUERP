@@ -42,3 +42,20 @@
 .input-icon-wrapper input {
     padding-left: 2.5rem;
 }
+
+.separator {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 2rem 0;
+    width: 100%;
+}
+
+.settings-card {
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .settings-card {
+        padding: 1rem;
+    }
+}

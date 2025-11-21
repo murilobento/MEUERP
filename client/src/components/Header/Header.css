@@ -346,3 +346,88 @@
         padding: 0 1rem;
     }
 }
+
+/* Weather Forecast Dropdown */
+.weather-widget {
+    position: relative;
+    cursor: default;
+}
+
+.weather-forecast-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 280px;
+    padding: 1rem;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+.weather-widget:hover .weather-forecast-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.forecast-header h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.forecast-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.forecast-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.forecast-date {
+    font-weight: 500;
+    color: var(--text-primary);
+    text-transform: capitalize;
+    min-width: 80px;
+}
+
+.forecast-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.125rem;
+}
+
+.forecast-condition {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.forecast-temps {
+    display: flex;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+.temp-max {
+    color: #ef4444;
+}
+
+.temp-min {
+    color: #3b82f6;
+}

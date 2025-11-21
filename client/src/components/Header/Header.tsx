@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-    Search,
     Bell,
     Sun,
     Moon,
@@ -35,14 +34,7 @@ const Header: React.FC = () => {
                     <Menu size={20} />
                 </button>
 
-                <div className="header-search">
-                    <Search size={18} />
-                    <input
-                        type="text"
-                        placeholder="Pesquisar..."
-                        className="header-search-input"
-                    />
-                </div>
+
             </div>
 
             <div className="header-right">
@@ -68,6 +60,31 @@ const Header: React.FC = () => {
                             </>
                         )}
                     </div>
+
+                    {/* Forecast Dropdown */}
+                    {!weather.loading && weather.forecast && weather.forecast.length > 0 && (
+                        <div className="weather-forecast-dropdown">
+                            <div className="forecast-header">
+                                <h3>Próximos 3 dias</h3>
+                            </div>
+                            <div className="forecast-list">
+                                {weather.forecast.map((day, index) => (
+                                    <div key={index} className="forecast-item">
+                                        <div className="forecast-date">
+                                            <span>{day.date}</span>
+                                        </div>
+                                        <div className="forecast-info">
+                                            <span className="forecast-condition">{day.condition}</span>
+                                            <div className="forecast-temps">
+                                                <span className="temp-max">↑ {day.maxTemp}°</span>
+                                                <span className="temp-min">↓ {day.minTemp}°</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="header-divider"></div>
@@ -85,7 +102,7 @@ const Header: React.FC = () => {
                         onBlur={() => setTimeout(() => setShowNotifications(false), 200)}
                     >
                         <Bell size={20} />
-                        <span className="header-badge">3</span>
+                        <span className="header-badge"></span>
                     </button>
 
                     {showNotifications && (

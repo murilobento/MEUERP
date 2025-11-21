@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Save, Building, MapPin, Phone, Mail, Globe } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { companyService } from '../../../services/companyService';
+import { MaskedInput } from '../../../components/ui/MaskedInput/MaskedInput';
+import { validateCNPJ, validatePhone, validateCEP } from '../../../utils/masks';
 import './CompanySettings.css';
 
 interface CompanyFormData {
@@ -23,6 +25,7 @@ interface CompanyFormData {
 
 const CompanySettings: React.FC = () => {
     const [loading, setLoading] = useState(false);
+    const [loadingCep, setLoadingCep] = useState(false);
     const [formData, setFormData] = useState<CompanyFormData>({
         name: '',
         cnpj: '',
@@ -85,8 +88,75 @@ const CompanySettings: React.FC = () => {
         }
     };
 
+    const handleMaskedChange = (name: string, value: string) => {
+        if (name.includes('.')) {
+            const [parent, child] = name.split('.');
+            setFormData((prev) => ({
+                ...prev,
+                [parent]: {
+                    ...(prev as any)[parent],
+                    [child]: value,
+                },
+            }));
+        } else {
+            setFormData((prev) => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const handleCepBlur = async () => {
+        const cep = formData.address.zipCode.replace(/\D/g, '');
+        if (cep.length !== 8) return;
+
+        setLoadingCep(true);
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await response.json();
+
+            if (data.erro) {
+                toast.error('CEP não encontrado');
+                return;
+            }
+
+            setFormData((prev) => ({
+                ...prev,
+                address: {
+                    ...prev.address,
+                    street: data.logradouro,
+                    neighborhood: data.bairro,
+                    city: data.localidade,
+                    state: data.uf,
+                },
+            }));
+            toast.success('Endereço encontrado!');
+        } catch (error) {
+            console.error('Erro ao buscar CEP:', error);
+            toast.error('Erro ao buscar CEP');
+        } finally {
+            setLoadingCep(false);
+        }
+    };
+
+    const validateForm = (): boolean => {
+        if (formData.cnpj && !validateCNPJ(formData.cnpj)) {
+            toast.error('CNPJ inválido');
+            return false;
+        }
+        if (formData.phone && !validatePhone(formData.phone)) {
+            toast.error('Telefone inválido');
+            return false;
+        }
+        if (formData.address.zipCode && !validateCEP(formData.address.zipCode)) {
+            toast.error('CEP inválido');
+            return false;
+        }
+        return true;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!validateForm()) return;
+
         setLoading(true);
 
         try {
@@ -118,9 +188,17 @@ const CompanySettings: React.FC = () => {
                     secondary: '#10B981',
                 },
             });
-        } catch (error) {
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } catch (error: any) {
             console.error('Erro ao salvar configurações:', error);
-            toast.error('Erro ao salvar configurações');
+            if (error.response?.status === 403) {
+                toast.error('Você não tem permissão para alterar as configurações da empresa.');
+            } else {
+                toast.error('Erro ao salvar configurações');
+            }
         } finally {
             setLoading(false);
         }
@@ -148,180 +226,185 @@ const CompanySettings: React.FC = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="settings-form">
-                {/* Informações Básicas */}
-                <div className="card settings-section">
-                    <div className="section-header">
-                        <Building size={20} />
-                        <h2>Informações Básicas</h2>
-                    </div>
-                    <div className="form-grid">
-                        <div className="form-group span-2">
-                            <label>Razão Social / Nome Fantasia</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                className="input"
-                                placeholder="Nome da sua empresa"
-                            />
+                <div className="card settings-card">
+                    {/* Informações Básicas */}
+                    <div className="settings-section">
+                        <div className="section-header">
+                            <Building size={20} />
+                            <h2>Informações Básicas</h2>
                         </div>
-                        <div className="form-group">
-                            <label>CNPJ</label>
-                            <input
-                                type="text"
-                                name="cnpj"
-                                value={formData.cnpj}
-                                onChange={handleChange}
-                                className="input"
-                                placeholder="00.000.000/0001-00"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Website</label>
-                            <div className="input-icon-wrapper">
-                                <Globe size={16} />
+                        <div className="form-grid">
+                            <div className="form-group span-2">
+                                <label>Razão Social / Nome Fantasia</label>
                                 <input
                                     type="text"
-                                    name="website"
-                                    value={formData.website}
+                                    name="name"
+                                    value={formData.name}
                                     onChange={handleChange}
                                     className="input"
-                                    placeholder="www.exemplo.com"
+                                    placeholder="Nome da sua empresa"
                                 />
+                            </div>
+                            <div className="form-group">
+                                <MaskedInput
+                                    label="CNPJ"
+                                    name="cnpj"
+                                    value={formData.cnpj}
+                                    onChange={(val) => handleMaskedChange('cnpj', val)}
+                                    maskType="cnpj"
+                                    validate={validateCNPJ}
+                                    placeholder="00.000.000/0001-00"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Website</label>
+                                <div className="input-icon-wrapper">
+                                    <Globe size={16} />
+                                    <input
+                                        type="text"
+                                        name="website"
+                                        value={formData.website}
+                                        onChange={handleChange}
+                                        className="input"
+                                        placeholder="www.exemplo.com"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Contato */}
-                <div className="card settings-section">
-                    <div className="section-header">
-                        <Phone size={20} />
-                        <h2>Contato</h2>
-                    </div>
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label>E-mail Principal</label>
-                            <div className="input-icon-wrapper">
-                                <Mail size={16} />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="input"
-                                    placeholder="contato@empresa.com"
-                                />
-                            </div>
+                    <div className="separator" />
+
+                    {/* Contato */}
+                    <div className="settings-section">
+                        <div className="section-header">
+                            <Phone size={20} />
+                            <h2>Contato</h2>
                         </div>
-                        <div className="form-group">
-                            <label>Telefone / WhatsApp</label>
-                            <div className="input-icon-wrapper">
-                                <Phone size={16} />
-                                <input
-                                    type="text"
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label>E-mail Principal</label>
+                                <div className="input-icon-wrapper">
+                                    <Mail size={16} />
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className="input"
+                                        placeholder="contato@empresa.com"
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <MaskedInput
+                                    label="Telefone / WhatsApp"
                                     name="phone"
                                     value={formData.phone}
-                                    onChange={handleChange}
-                                    className="input"
+                                    onChange={(val) => handleMaskedChange('phone', val)}
+                                    maskType="phone"
+                                    validate={validatePhone}
+                                    icon={<Phone size={16} />}
                                     placeholder="(00) 00000-0000"
                                 />
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Endereço */}
-                <div className="card settings-section">
-                    <div className="section-header">
-                        <MapPin size={20} />
-                        <h2>Endereço</h2>
-                    </div>
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label>CEP</label>
-                            <input
-                                type="text"
-                                name="address.zipCode"
-                                value={formData.address.zipCode}
-                                onChange={handleChange}
-                                className="input"
-                                placeholder="00000-000"
-                            />
+                    <div className="separator" />
+
+                    {/* Endereço */}
+                    <div className="settings-section">
+                        <div className="section-header">
+                            <MapPin size={20} />
+                            <h2>Endereço</h2>
                         </div>
-                        <div className="form-group span-2">
-                            <label>Rua / Avenida</label>
-                            <input
-                                type="text"
-                                name="address.street"
-                                value={formData.address.street}
-                                onChange={handleChange}
-                                className="input"
-                                placeholder="Nome da rua"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Número</label>
-                            <input
-                                type="text"
-                                name="address.number"
-                                value={formData.address.number}
-                                onChange={handleChange}
-                                className="input"
-                                placeholder="123"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Complemento</label>
-                            <input
-                                type="text"
-                                name="address.complement"
-                                value={formData.address.complement}
-                                onChange={handleChange}
-                                className="input"
-                                placeholder="Sala, Bloco, etc."
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Bairro</label>
-                            <input
-                                type="text"
-                                name="address.neighborhood"
-                                value={formData.address.neighborhood}
-                                onChange={handleChange}
-                                className="input"
-                                placeholder="Bairro"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Cidade</label>
-                            <input
-                                type="text"
-                                name="address.city"
-                                value={formData.address.city}
-                                onChange={handleChange}
-                                className="input"
-                                placeholder="Cidade"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Estado (UF)</label>
-                            <input
-                                type="text"
-                                name="address.state"
-                                value={formData.address.state}
-                                onChange={handleChange}
-                                className="input"
-                                placeholder="UF"
-                                maxLength={2}
-                            />
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <MaskedInput
+                                    label="CEP"
+                                    name="address.zipCode"
+                                    value={formData.address.zipCode}
+                                    onChange={(val) => handleMaskedChange('address.zipCode', val)}
+                                    onBlur={handleCepBlur}
+                                    maskType="cep"
+                                    validate={validateCEP}
+                                    placeholder="00000-000"
+                                />
+                                {loadingCep && <span className="text-sm text-blue-500 mt-1">Buscando endereço...</span>}
+                            </div>
+                            <div className="form-group span-2">
+                                <label>Rua / Avenida</label>
+                                <input
+                                    type="text"
+                                    name="address.street"
+                                    value={formData.address.street}
+                                    onChange={handleChange}
+                                    className="input"
+                                    placeholder="Nome da rua"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Número</label>
+                                <input
+                                    type="text"
+                                    name="address.number"
+                                    value={formData.address.number}
+                                    onChange={handleChange}
+                                    className="input"
+                                    placeholder="123"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Complemento</label>
+                                <input
+                                    type="text"
+                                    name="address.complement"
+                                    value={formData.address.complement}
+                                    onChange={handleChange}
+                                    className="input"
+                                    placeholder="Sala, Bloco, etc."
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Bairro</label>
+                                <input
+                                    type="text"
+                                    name="address.neighborhood"
+                                    value={formData.address.neighborhood}
+                                    onChange={handleChange}
+                                    className="input"
+                                    placeholder="Bairro"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Cidade</label>
+                                <input
+                                    type="text"
+                                    name="address.city"
+                                    value={formData.address.city}
+                                    onChange={handleChange}
+                                    className="input"
+                                    placeholder="Cidade"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Estado (UF)</label>
+                                <input
+                                    type="text"
+                                    name="address.state"
+                                    value={formData.address.state}
+                                    onChange={handleChange}
+                                    className="input"
+                                    placeholder="UF"
+                                    maxLength={2}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-
     );
 };
 

@@ -79,6 +79,7 @@ export interface Customer {
 
 export interface CustomerFilters {
     search?: string;
+    status?: 'ACTIVE' | 'INACTIVE';
     page?: number;
     limit?: number;
 }

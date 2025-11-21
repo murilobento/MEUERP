@@ -3,15 +3,18 @@ import { PrismaClient, Prisma } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export const CustomerService = {
-    async list(page: number, limit: number, search?: string) {
+    async list(page: number, limit: number, search?: string, status?: string) {
         const skip = (page - 1) * limit;
-        const where: Prisma.CustomerWhereInput = search ? {
-            OR: [
-                { name: { contains: search } },
-                { email: { contains: search } },
-                { document: { contains: search } }
-            ]
-        } : {};
+        const where: Prisma.CustomerWhereInput = {
+            ...(search ? {
+                OR: [
+                    { name: { contains: search } },
+                    { email: { contains: search } },
+                    { document: { contains: search } }
+                ]
+            } : {}),
+            ...(status ? { status: status as any } : {})
+        };
 
         const [customers, total] = await Promise.all([
             prisma.customer.findMany({

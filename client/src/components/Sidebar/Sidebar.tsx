@@ -22,15 +22,33 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useLayout } from '../../contexts/LayoutContext';
 import './Sidebar.css';
 
+import { companyService } from '../../services/companyService';
+
 const Sidebar: React.FC = () => {
     const { logout } = useAuth();
     const { sidebarOpen } = useLayout();
     const location = useLocation();
+    const [companyName, setCompanyName] = useState('Nexus ERP');
 
     // Estado para o módulo selecionado (índice)
     const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const fetchCompanySettings = async () => {
+            try {
+                const settings = await companyService.getSettings();
+                if (settings && settings.name) {
+                    setCompanyName(settings.name);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar configurações da empresa:', error);
+            }
+        };
+
+        fetchCompanySettings();
+    }, []);
 
     // Fechar dropdown ao clicar fora
     useEffect(() => {
@@ -118,7 +136,7 @@ const Sidebar: React.FC = () => {
                     </div>
                     {sidebarOpen && (
                         <div className="logo-text">
-                            <h1>Nexus ERP</h1>
+                            <h1>{companyName}</h1>
                         </div>
                     )}
                 </div>

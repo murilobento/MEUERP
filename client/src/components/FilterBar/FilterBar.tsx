@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, Filter, Calendar, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Filter, Calendar, X, ChevronDown } from 'lucide-react';
 import './FilterBar.css';
 
 interface FilterOption {
@@ -14,6 +14,66 @@ interface FilterBarProps {
     statusOptions?: FilterOption[];
     placeholder?: string;
 }
+
+interface FilterSelectProps {
+    icon: React.ReactNode;
+    value: string;
+    options: FilterOption[];
+    onChange: (value: string) => void;
+    label?: string;
+}
+
+const FilterSelect: React.FC<FilterSelectProps> = ({ icon, value, options, onChange }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const selectedOption = options.find(opt => opt.value === value) || options[0];
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSelect = (newValue: string) => {
+        onChange(newValue);
+        setIsOpen(false);
+    };
+
+    return (
+        <div className="filter-select-container" ref={containerRef}>
+            <button
+                className={`filter-select-trigger ${isOpen ? 'active' : ''}`}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <div className="trigger-content">
+                    {icon}
+                    <span>{selectedOption.label}</span>
+                </div>
+                <ChevronDown size={14} className={`trigger-arrow ${isOpen ? 'rotated' : ''}`} />
+            </button>
+
+            {isOpen && (
+                <div className="filter-select-dropdown">
+                    {options.map((opt) => (
+                        <button
+                            key={opt.value}
+                            className={`filter-select-option ${opt.value === value ? 'selected' : ''}`}
+                            onClick={() => handleSelect(opt.value)}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 const FilterBar: React.FC<FilterBarProps> = ({
     onSearch,
@@ -36,14 +96,12 @@ const FilterBar: React.FC<FilterBarProps> = ({
         if (onSearch) onSearch(value);
     };
 
-    const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
+    const handleStatusChange = (value: string) => {
         setSelectedStatus(value);
         if (onStatusFilter) onStatusFilter(value);
     };
 
-    const handleDateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
+    const handleDateChange = (value: string) => {
         setSelectedDateRange(value);
         if (onDateFilter) onDateFilter(value);
     };
@@ -56,6 +114,15 @@ const FilterBar: React.FC<FilterBarProps> = ({
         if (onStatusFilter) onStatusFilter('all');
         if (onDateFilter) onDateFilter('all');
     };
+
+    const dateOptions = [
+        { label: 'Todas as datas', value: 'all' },
+        { label: 'Hoje', value: 'today' },
+        { label: 'Ontem', value: 'yesterday' },
+        { label: 'Mês Atual', value: 'thisMonth' },
+        { label: 'Mês Anterior', value: 'lastMonth' },
+        { label: 'Personalizado...', value: 'custom' },
+    ];
 
     return (
         <div className="filter-bar">
@@ -71,30 +138,21 @@ const FilterBar: React.FC<FilterBarProps> = ({
 
             <div className="filter-actions">
                 {onStatusFilter && (
-                    <div className="filter-select-wrapper">
-                        <Filter size={16} />
-                        <select value={selectedStatus} onChange={handleStatusChange}>
-                            {statusOptions.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    <FilterSelect
+                        icon={<Filter size={16} />}
+                        value={selectedStatus}
+                        options={statusOptions}
+                        onChange={handleStatusChange}
+                    />
                 )}
 
                 {onDateFilter && (
-                    <div className="filter-select-wrapper">
-                        <Calendar size={16} />
-                        <select value={selectedDateRange} onChange={handleDateChange}>
-                            <option value="all">Todas as datas</option>
-                            <option value="today">Hoje</option>
-                            <option value="yesterday">Ontem</option>
-                            <option value="thisMonth">Mês Atual</option>
-                            <option value="lastMonth">Mês Anterior</option>
-                            <option value="custom">Personalizado...</option>
-                        </select>
-                    </div>
+                    <FilterSelect
+                        icon={<Calendar size={16} />}
+                        value={selectedDateRange}
+                        options={dateOptions}
+                        onChange={handleDateChange}
+                    />
                 )}
 
                 {(searchTerm || selectedStatus !== 'all' || selectedDateRange !== 'all') && (
