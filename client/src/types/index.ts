@@ -64,6 +64,7 @@ export interface Customer {
     email?: string;
     phone?: string;
     document?: string;
+    status: 'ACTIVE' | 'INACTIVE';
     type: CustomerType;
     zipCode?: string;
     street?: string;

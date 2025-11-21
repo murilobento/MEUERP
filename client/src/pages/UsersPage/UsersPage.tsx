@@ -85,7 +85,17 @@ const UsersPage: React.FC = () => {
     const handleDelete = async (id: number) => {
         try {
             await userService.delete(id);
-            toast.success('Usuário excluído com sucesso');
+            toast.success('Usuário excluído com sucesso', {
+                style: {
+                    background: '#10B981',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                },
+                iconTheme: {
+                    primary: '#fff',
+                    secondary: '#10B981',
+                },
+            });
             setIsDeleteAlertOpen(false);
             loadUsers();
         } catch (error) {
@@ -111,10 +121,30 @@ const UsersPage: React.FC = () => {
         try {
             if (selectedUser) {
                 await userService.update(selectedUser.id, data);
-                toast.success('Usuário atualizado com sucesso');
+                toast.success('Usuário atualizado com sucesso', {
+                    style: {
+                        background: '#10B981',
+                        color: '#fff',
+                        fontWeight: 'bold',
+                    },
+                    iconTheme: {
+                        primary: '#fff',
+                        secondary: '#10B981',
+                    },
+                });
             } else {
                 await userService.create(data);
-                toast.success('Usuário criado com sucesso');
+                toast.success('Usuário criado com sucesso', {
+                    style: {
+                        background: '#10B981',
+                        color: '#fff',
+                        fontWeight: 'bold',
+                    },
+                    iconTheme: {
+                        primary: '#fff',
+                        secondary: '#10B981',
+                    },
+                });
             }
             setIsModalOpen(false);
             loadUsers();
@@ -165,7 +195,7 @@ const UsersPage: React.FC = () => {
             key: 'status',
             header: 'STATUS',
             render: (user) => (
-                <span className={`badge ${user.status === 'ACTIVE' ? 'badge-success' : 'badge-secondary'}`}>
+                <span className={`status-badge ${user.status === 'ACTIVE' ? 'active' : 'inactive'}`}>
                     {user.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                 </span>
             )

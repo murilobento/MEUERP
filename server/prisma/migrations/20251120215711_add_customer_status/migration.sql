@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `customers` ADD COLUMN `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE';

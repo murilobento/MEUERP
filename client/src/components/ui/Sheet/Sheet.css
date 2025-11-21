@@ -38,7 +38,7 @@
 }
 
 .sheet-header {
-    padding: 1.5rem;
+    padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
@@ -46,7 +46,7 @@
 }
 
 .sheet-header h2 {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: var(--text-primary);
     margin: 0;
@@ -91,4 +91,17 @@
     to {
         opacity: 1;
     }
+}
+
+.sheet-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sheet-header-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
 }

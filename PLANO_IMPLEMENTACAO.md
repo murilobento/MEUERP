@@ -178,10 +178,10 @@
 **Prioridade: MÉDIA**
 
 #### 5.1 Clientes
-- [ ] CRUD de Clientes
-- [ ] Filtros completos
-- [ ] API ViaCep no endereço
-- [ ] CPF/CNPJ, Contato, Endereço
+- [x] CRUD de Clientes
+- [x] Filtros completos
+- [x] API ViaCep no endereço
+- [x] CPF/CNPJ, Contato, Endereço
 - [ ] Histórico de pedidos
 
 #### 5.2 Pedidos (Vendas)

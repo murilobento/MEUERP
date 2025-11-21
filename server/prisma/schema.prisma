@@ -190,6 +190,7 @@ model Customer {
   phone       String?
   document    String?  @unique // CPF/CNPJ
   type        CustomerType @default(INDIVIDUAL)
+  status      CustomerStatus @default(ACTIVE)
   
   // Endereço
   zipCode     String?
@@ -211,6 +212,11 @@ model Customer {
 enum CustomerType {
   INDIVIDUAL
   COMPANY
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
 }
 
 model Supplier {

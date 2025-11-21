@@ -2,12 +2,13 @@ import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import './Sheet.css';
 
-interface SheetProps {
+export interface SheetProps {
     isOpen: boolean;
     onClose: () => void;
     title: string;
     children: React.ReactNode;
     size?: 'sm' | 'md' | 'lg' | 'xl';
+    headerRight?: React.ReactNode;
 }
 
 export const Sheet: React.FC<SheetProps> = ({
@@ -15,7 +16,8 @@ export const Sheet: React.FC<SheetProps> = ({
     onClose,
     title,
     children,
-    size = 'md'
+    size = 'md',
+    headerRight
 }) => {
     useEffect(() => {
         if (isOpen) {
@@ -37,7 +39,10 @@ export const Sheet: React.FC<SheetProps> = ({
                 onClick={e => e.stopPropagation()}
             >
                 <div className="sheet-header">
-                    <h2>{title}</h2>
+                    <div className="sheet-header-main">
+                        <h2>{title}</h2>
+                        {headerRight}
+                    </div>
                     <button className="close-btn" onClick={onClose}>
                         <X size={24} />
                     </button>

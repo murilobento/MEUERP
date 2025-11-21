@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
 import LoginPage from './pages/LoginPage/LoginPage';
 import UsersPage from './pages/UsersPage/UsersPage';
+import CustomersPage from './pages/CustomersPage/CustomersPage';
 import CompanySettings from './pages/Admin/Settings/CompanySettings';
 import RolesPage from './pages/Admin/Roles/RolesPage';
 
@@ -41,6 +42,7 @@ const App: React.FC = () => {
                 {/* Placeholder para outras rotas */}
                 <Route path="financeiro/*" element={<div className="card">Módulo Financeiro em desenvolvimento</div>} />
                 <Route path="estoque/*" element={<div className="card">Módulo Estoque em desenvolvimento</div>} />
+                <Route path="comercial/clientes" element={<CustomersPage />} />
                 <Route path="comercial/*" element={<div className="card">Módulo Comercial em desenvolvimento</div>} />
                 <Route path="configuracoes" element={<div className="card">Configurações em desenvolvimento</div>} />
                 <Route path="ajuda" element={<div className="card">Ajuda em desenvolvimento</div>} />
