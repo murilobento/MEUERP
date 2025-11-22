@@ -26,6 +26,17 @@ export const boardService = {
         await api.delete(`/boards/${id}`);
     },
 
+    // Member operations
+    async inviteUser(boardId: number, email: string): Promise<Board> {
+        const response = await api.post(`/boards/${boardId}/members`, { email });
+        return response.data;
+    },
+
+    async removeUser(boardId: number, userId: number): Promise<Board> {
+        const response = await api.delete(`/boards/${boardId}/members/${userId}`);
+        return response.data;
+    },
+
     // Column operations
     async createColumn(boardId: number, data: CreateColumnData) {
         const response = await api.post(`/boards/${boardId}/columns`, data);

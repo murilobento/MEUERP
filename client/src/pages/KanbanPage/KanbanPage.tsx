@@ -24,6 +24,7 @@ export const KanbanPage: React.FC = () => {
     const [showBoardModal, setShowBoardModal] = useState(false);
     const [showColumnModal, setShowColumnModal] = useState(false);
     const [showCardModal, setShowCardModal] = useState(false);
+    const [showMembersModal, setShowMembersModal] = useState(false);
     const [editingBoard, setEditingBoard] = useState<Board | null>(null);
     const [editingColumn, setEditingColumn] = useState<Column | null>(null);
     const [editingCard, setEditingCard] = useState<Card | null>(null);
@@ -288,8 +289,22 @@ export const KanbanPage: React.FC = () => {
                                 )}
 
                                 <div className="board-card-stats">
-                                    <span>📊 {board.columns.length} colunas</span>
-                                    <span>📝 {board.columns.reduce((sum, col) => sum + col.cards.length, 0)} cards</span>
+                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: 1 }}>
+                                        <span>📊 {board.columns.length} colunas</span>
+                                        <span>📝 {board.columns.reduce((sum, col) => sum + col.cards.length, 0)} cards</span>
+                                    </div>
+                                    <span style={{
+                                        fontSize: '0.75rem',
+                                        padding: '0.25rem 0.5rem',
+                                        background: board.owner.id === JSON.parse(localStorage.getItem('user') || '{}').id
+                                            ? 'var(--primary-color)'
+                                            : 'var(--accent-color)',
+                                        color: 'white',
+                                        borderRadius: '4px',
+                                        fontWeight: 500
+                                    }}>
+                                        {board.owner.id === JSON.parse(localStorage.getItem('user') || '{}').id ? '👑 Dono' : '👤 Membro'}
+                                    </span>
                                 </div>
                             </div>
                         ))}
@@ -323,6 +338,9 @@ export const KanbanPage: React.FC = () => {
                     <h2 className="kanban-title">{selectedBoard.title}</h2>
                 </div>
                 <div className="kanban-actions">
+                    <button className="btn btn-secondary btn-sm" onClick={() => setShowMembersModal(true)}>
+                        👥 Membros
+                    </button>
                     <button className="btn btn-secondary btn-sm" onClick={handleCreateColumn}>
                         + Nova Coluna
                     </button>
@@ -370,6 +388,14 @@ export const KanbanPage: React.FC = () => {
                         setEditingCard(null);
                         setTargetColumnId(null);
                     }}
+                />
+            )}
+
+            {showMembersModal && (
+                <MembersModal
+                    board={selectedBoard}
+                    onClose={() => setShowMembersModal(false)}
+                    onUpdate={() => loadBoard(selectedBoard.id)}
                 />
             )}
         </div>
@@ -634,6 +660,196 @@ const CardModal: React.FC<CardModalProps> = ({ card, columnId, onSave, onDelete,
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    );
+};
+
+// Members Modal Component
+interface MembersModalProps {
+    board: Board;
+    onClose: () => void;
+    onUpdate: () => void;
+}
+
+const MembersModal: React.FC<MembersModalProps> = ({ board, onClose, onUpdate }) => {
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleInvite = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        try {
+            await boardService.inviteUser(board.id, email);
+            setEmail('');
+            onUpdate();
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Erro ao convidar usuário');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRemove = async (userId: number) => {
+        if (!confirm('Tem certeza que deseja remover este membro?')) return;
+
+        try {
+            await boardService.removeUser(board.id, userId);
+            onUpdate();
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Erro ao remover usuário');
+        }
+    };
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h2 className="modal-title">Gerenciar Membros</h2>
+                    <button className="modal-close" onClick={onClose}>×</button>
+                </div>
+
+                <div style={{ padding: '1.5rem' }}>
+                    {/* Owner Section */}
+                    <div style={{ marginBottom: '1.5rem' }}>
+                        <h3 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
+                            Proprietário
+                        </h3>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem',
+                            padding: '0.75rem',
+                            background: 'var(--bg-secondary)',
+                            borderRadius: '8px'
+                        }}>
+                            <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                background: 'var(--primary-color)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
+                                fontWeight: 600
+                            }}>
+                                {board.owner.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
+                                    {board.owner.name}
+                                </div>
+                                <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                    {board.owner.email}
+                                </div>
+                            </div>
+                            <span style={{
+                                fontSize: '0.75rem',
+                                padding: '0.25rem 0.5rem',
+                                background: 'var(--primary-color)',
+                                color: 'white',
+                                borderRadius: '4px'
+                            }}>
+                                Dono
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Members Section */}
+                    <div style={{ marginBottom: '1.5rem' }}>
+                        <h3 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
+                            Membros ({board.members.length})
+                        </h3>
+                        {board.members.length === 0 ? (
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', padding: '1rem', textAlign: 'center' }}>
+                                Nenhum membro adicionado ainda
+                            </p>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                {board.members.map((member) => (
+                                    <div key={member.id} style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.75rem',
+                                        padding: '0.75rem',
+                                        background: 'var(--bg-secondary)',
+                                        borderRadius: '8px'
+                                    }}>
+                                        <div style={{
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '50%',
+                                            background: 'var(--accent-color)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            color: 'white',
+                                            fontWeight: 600
+                                        }}>
+                                            {member.name.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
+                                                {member.name}
+                                            </div>
+                                            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                                {member.email}
+                                            </div>
+                                        </div>
+                                        <button
+                                            className="btn-icon"
+                                            onClick={() => handleRemove(member.id)}
+                                            title="Remover"
+                                            style={{ color: 'var(--danger-color)' }}
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Invite Form */}
+                    <form onSubmit={handleInvite}>
+                        <div className="form-group">
+                            <label className="form-label">Convidar por Email</label>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <input
+                                    type="email"
+                                    className="input"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="email@exemplo.com"
+                                    required
+                                    disabled={loading}
+                                />
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Convidando...' : 'Convidar'}
+                                </button>
+                            </div>
+                            {error && (
+                                <p style={{ color: 'var(--danger-color)', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                                    {error}
+                                </p>
+                            )}
+                        </div>
+                    </form>
+                </div>
+
+                <div className="modal-actions">
+                    <button type="button" className="btn btn-secondary" onClick={onClose}>
+                        Fechar
+                    </button>
+                </div>
             </div>
         </div>
     );

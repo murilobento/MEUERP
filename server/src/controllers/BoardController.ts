@@ -6,7 +6,11 @@ const boardService = new BoardService();
 export class BoardController {
     async list(req: Request, res: Response) {
         try {
-            const boards = await boardService.list();
+            const userId = req.user?.userId;
+            if (!userId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+            const boards = await boardService.list(userId);
             res.json(boards);
         } catch (error) {
             res.status(500).json({ error: 'Failed to fetch boards' });
@@ -30,10 +34,36 @@ export class BoardController {
 
     async create(req: Request, res: Response) {
         try {
-            const board = await boardService.create(req.body);
+            const userId = req.user?.userId;
+            if (!userId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+            const board = await boardService.create(userId, req.body);
             res.status(201).json(board);
         } catch (error) {
             res.status(500).json({ error: 'Failed to create board' });
+        }
+    }
+
+    async inviteUser(req: Request, res: Response) {
+        try {
+            const boardId = parseInt(req.params.id);
+            const { email } = req.body;
+            const board = await boardService.inviteUser(boardId, email);
+            res.json(board);
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to invite user' });
+        }
+    }
+
+    async removeUser(req: Request, res: Response) {
+        try {
+            const boardId = parseInt(req.params.id);
+            const userId = parseInt(req.params.userId);
+            const board = await boardService.removeUser(boardId, userId);
+            res.json(board);
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to remove user' });
         }
     }
 

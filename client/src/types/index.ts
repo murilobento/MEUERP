@@ -151,6 +151,19 @@ export interface Board {
     title: string;
     description?: string;
     color: string;
+    ownerId: number;
+    owner: {
+        id: number;
+        name: string;
+        email: string;
+        avatar?: string;
+    };
+    members: {
+        id: number;
+        name: string;
+        email: string;
+        avatar?: string;
+    }[];
     columns: Column[];
     createdAt: string;
     updatedAt: string;

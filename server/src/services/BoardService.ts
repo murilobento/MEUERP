@@ -3,9 +3,31 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export class BoardService {
-    async list() {
+    async list(userId: number) {
         return await prisma.board.findMany({
+            where: {
+                OR: [
+                    { ownerId: userId },
+                    { members: { some: { id: userId } } }
+                ]
+            },
             include: {
+                owner: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatar: true
+                    }
+                },
+                members: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatar: true
+                    }
+                },
                 columns: {
                     orderBy: { position: 'asc' },
                     include: {
@@ -33,6 +55,22 @@ export class BoardService {
         return await prisma.board.findUnique({
             where: { id },
             include: {
+                owner: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatar: true
+                    }
+                },
+                members: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatar: true
+                    }
+                },
                 columns: {
                     orderBy: { position: 'asc' },
                     include: {
@@ -55,9 +93,12 @@ export class BoardService {
         });
     }
 
-    async create(data: { title: string; description?: string; color?: string }) {
+    async create(userId: number, data: { title: string; description?: string; color?: string }) {
         return await prisma.board.create({
-            data,
+            data: {
+                ...data,
+                ownerId: userId
+            },
             include: {
                 columns: true
             }
@@ -77,6 +118,33 @@ export class BoardService {
     async delete(id: number) {
         return await prisma.board.delete({
             where: { id }
+        });
+    }
+
+    async inviteUser(boardId: number, email: string) {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) throw new Error('User not found');
+
+        return await prisma.board.update({
+            where: { id: boardId },
+            data: {
+                members: {
+                    connect: { id: user.id }
+                }
+            },
+            include: { members: true }
+        });
+    }
+
+    async removeUser(boardId: number, userId: number) {
+        return await prisma.board.update({
+            where: { id: boardId },
+            data: {
+                members: {
+                    disconnect: { id: userId }
+                }
+            },
+            include: { members: true }
         });
     }
 
