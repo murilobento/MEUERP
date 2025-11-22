@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Calendar, User, CreditCard, FileText } from 'lucide-react';
+import { Calendar, User, CreditCard, FileText } from 'lucide-react';
 import type { Sale } from '../../types';
 import './SalesOrdersPage.css';
 
