@@ -13,6 +13,7 @@ import SalesOrdersPage from './pages/SalesOrdersPage/SalesOrdersPage';
 import SuppliersPage from './pages/SuppliersPage/SuppliersPage';
 import CompanySettings from './pages/Admin/Settings/CompanySettings';
 import RolesPage from './pages/Admin/Roles/RolesPage';
+import AdminDashboard from './pages/Admin/Dashboard/AdminDashboard';
 import { KanbanPage } from './pages/KanbanPage/KanbanPage';
 import InventoryPage from './pages/InventoryPage/InventoryPage';
 
@@ -40,14 +41,16 @@ const App: React.FC = () => {
                 {/* ... */}
 
                 <Route path="admin/users" element={<UsersPage />} />
+                <Route path="admin/dashboard" element={<AdminDashboard />} />
                 <Route path="admin/configuracoes" element={<CompanySettings />} />
                 <Route path="admin/funcoes" element={<RolesPage />} />
 
                 {/* Placeholder para outras rotas */}
                 <Route path="financeiro/*" element={<div className="card">Módulo Financeiro em desenvolvimento</div>} />
+                <Route path="estoque/dashboard" element={<div className="card">Dashboard de Estoque em desenvolvimento</div>} />
                 <Route path="estoque/inventario" element={<InventoryPage />} />
                 <Route path="estoque/fornecedores" element={<SuppliersPage />} />
-                <Route path="estoque/*" element={<Navigate to="/estoque/inventario" replace />} />
+                <Route path="estoque/*" element={<Navigate to="/estoque/dashboard" replace />} />
                 <Route path="comercial/clientes" element={<CustomersPage />} />
                 <Route path="comercial/vendas" element={<SalesOrdersPage />} />
                 <Route path="comercial/*" element={<div className="card">Módulo Comercial em desenvolvimento</div>} />

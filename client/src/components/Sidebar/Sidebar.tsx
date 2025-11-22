@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
     Users,
@@ -29,6 +29,7 @@ const Sidebar: React.FC = () => {
     const { logout } = useAuth();
     const { sidebarOpen } = useLayout();
     const location = useLocation();
+    const navigate = useNavigate();
     const [companyName, setCompanyName] = useState('Nexus ERP');
 
     // Estado para o módulo selecionado (índice)
@@ -82,6 +83,7 @@ const Sidebar: React.FC = () => {
             name: 'Administrativo',
             icon: Building2,
             subItems: [
+                { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
                 { name: 'Configurações', path: '/admin/configuracoes', icon: Settings },
                 { name: 'Funções e Acesso', path: '/admin/funcoes', icon: Shield },
                 { name: 'Gestão de Equipe', path: '/admin/users', icon: Users },
@@ -126,6 +128,12 @@ const Sidebar: React.FC = () => {
     const handleModuleSelect = (index: number) => {
         setSelectedModuleIndex(index);
         setIsDropdownOpen(false);
+
+        // Navegar para o primeiro item do módulo selecionado (geralmente o Dashboard)
+        const selectedModule = modules[index];
+        if (selectedModule && selectedModule.subItems.length > 0) {
+            navigate(selectedModule.subItems[0].path);
+        }
     };
 
     return (
