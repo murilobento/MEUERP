@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { BoardService } from '../services/BoardService';
+import { InvitationService } from '../services/InvitationService';
 
 const boardService = new BoardService();
 
@@ -48,11 +49,18 @@ export class BoardController {
     async inviteUser(req: Request, res: Response) {
         try {
             const boardId = parseInt(req.params.id);
-            const { email } = req.body;
-            const board = await boardService.inviteUser(boardId, email);
-            res.json(board);
-        } catch (error) {
-            res.status(500).json({ error: 'Failed to invite user' });
+            const { userId } = req.body; // Expect userId instead of email now, or handle both? Plan said search users.
+            // The frontend will search and select a user, so sending userId is better.
+            // But wait, the plan said "Update inviteUser to create an invitation".
+            // Let's check if I need to import InvitationService here.
+
+            // I'll assume I need to instantiate it or use the one I created.
+            // Let's import it first.
+            const invitationService = new InvitationService();
+            const invitation = await invitationService.create(boardId, userId);
+            res.json(invitation);
+        } catch (error: any) {
+            res.status(400).json({ error: error.message });
         }
     }
 

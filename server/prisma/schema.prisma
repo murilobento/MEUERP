@@ -34,6 +34,7 @@ model User {
   
   ownedBoards     Board[]    @relation("BoardOwner")
   memberBoards    Board[]    @relation("BoardMembers")
+  invitations     BoardInvitation[]
   
   @@map("users")
 }
@@ -418,6 +419,7 @@ model Board {
   members     User[]   @relation("BoardMembers")
   
   columns     Column[]
+  invitations BoardInvitation[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -467,4 +469,27 @@ enum CardPriority {
   MEDIUM
   HIGH
   URGENT
+}
+
+model BoardInvitation {
+  id          Int      @id @default(autoincrement())
+  status      InvitationStatus @default(PENDING)
+  
+  boardId     Int
+  board       Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  
+  inviteeId   Int
+  invitee     User     @relation(fields: [inviteeId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([boardId, inviteeId])
+  @@map("board_invitations")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }

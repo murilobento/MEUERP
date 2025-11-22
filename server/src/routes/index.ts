@@ -10,6 +10,7 @@ import cardRoutes from './cardRoutes';
 import productRoutes from './productRoutes';
 import categoryRoutes from './categoryRoutes';
 import salesRoutes from './salesRoutes';
+import invitationRoutes from './invitationRoutes';
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.use('/cards', cardRoutes);
 router.use('/products', productRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/sales', salesRoutes);
+router.use('/invitations', invitationRoutes);
 
 // Health check
 router.get('/health', (req, res) => {

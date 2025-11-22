@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Board, Column, Card, CreateBoardData, CreateColumnData, CreateCardData, CardPriority } from '../../types';
 import { boardService } from '../../services/boardService';
 import { cardService } from '../../services/cardService';
+import { userService } from '../../services/userService';
 import { KanbanColumn } from './KanbanColumn';
 import './KanbanPage.css';
 
@@ -25,6 +26,7 @@ export const KanbanPage: React.FC = () => {
     const [showColumnModal, setShowColumnModal] = useState(false);
     const [showCardModal, setShowCardModal] = useState(false);
     const [showMembersModal, setShowMembersModal] = useState(false);
+    const [showInvitationsModal, setShowInvitationsModal] = useState(false);
     const [editingBoard, setEditingBoard] = useState<Board | null>(null);
     const [editingColumn, setEditingColumn] = useState<Column | null>(null);
     const [editingCard, setEditingCard] = useState<Card | null>(null);
@@ -234,9 +236,14 @@ export const KanbanPage: React.FC = () => {
             <div className="kanban-page">
                 <div className="kanban-header">
                     <h1 className="kanban-title">Quadros Kanban</h1>
-                    <button className="btn btn-primary" onClick={handleCreateBoard}>
-                        + Novo Quadro
-                    </button>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button className="btn btn-secondary" onClick={() => setShowInvitationsModal(true)}>
+                            📩 Convites
+                        </button>
+                        <button className="btn btn-primary" onClick={handleCreateBoard}>
+                            + Novo Quadro
+                        </button>
+                    </div>
                 </div>
 
                 {boards.length === 0 ? (
@@ -319,6 +326,13 @@ export const KanbanPage: React.FC = () => {
                             setShowBoardModal(false);
                             setEditingBoard(null);
                         }}
+                    />
+                )}
+
+                {showInvitationsModal && (
+                    <InvitationsModal
+                        onClose={() => setShowInvitationsModal(false)}
+                        onUpdate={loadBoards}
                     />
                 )}
             </div>
@@ -665,6 +679,96 @@ const CardModal: React.FC<CardModalProps> = ({ card, columnId, onSave, onDelete,
     );
 };
 
+// Invitations Modal Component
+const InvitationsModal: React.FC<{ onClose: () => void; onUpdate: () => void }> = ({ onClose, onUpdate }) => {
+    const [invitations, setInvitations] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadInvitations();
+    }, []);
+
+    const loadInvitations = async () => {
+        try {
+            const data = await boardService.listPendingInvitations();
+            setInvitations(data);
+        } catch (error) {
+            console.error('Error loading invitations:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRespond = async (id: number, status: 'ACCEPTED' | 'REJECTED') => {
+        try {
+            await boardService.respondToInvitation(id, status);
+            await loadInvitations();
+            if (status === 'ACCEPTED') {
+                onUpdate();
+            }
+        } catch (error) {
+            console.error('Error responding to invitation:', error);
+        }
+    };
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h2 className="modal-title">Convites Pendentes</h2>
+                    <button className="modal-close" onClick={onClose}>×</button>
+                </div>
+
+                <div style={{ padding: '1.5rem' }}>
+                    {loading ? (
+                        <p>Carregando...</p>
+                    ) : invitations.length === 0 ? (
+                        <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+                            Nenhum convite pendente.
+                        </p>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {invitations.map((invitation) => (
+                                <div key={invitation.id} style={{
+                                    padding: '1rem',
+                                    background: 'var(--bg-secondary)',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <div>
+                                        <h3 style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                                            {invitation.board.title}
+                                        </h3>
+                                        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                            Convidado por: {invitation.board.owner.name}
+                                        </p>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button
+                                            className="btn btn-success btn-sm"
+                                            onClick={() => handleRespond(invitation.id, 'ACCEPTED')}
+                                        >
+                                            Aceitar
+                                        </button>
+                                        <button
+                                            className="btn btn-danger btn-sm"
+                                            onClick={() => handleRespond(invitation.id, 'REJECTED')}
+                                        >
+                                            Recusar
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // Members Modal Component
 interface MembersModalProps {
     board: Board;
@@ -673,18 +777,38 @@ interface MembersModalProps {
 }
 
 const MembersModal: React.FC<MembersModalProps> = ({ board, onClose, onUpdate }) => {
-    const [email, setEmail] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleInvite = async (e: React.FormEvent) => {
-        e.preventDefault();
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (searchQuery.length >= 3) {
+                try {
+                    const users = await userService.search(searchQuery);
+                    setSearchResults(users);
+                } catch (err) {
+                    console.error('Error searching users:', err);
+                }
+            } else {
+                setSearchResults([]);
+            }
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    const handleInvite = async (userId: number) => {
         setError('');
         setLoading(true);
 
         try {
-            await boardService.inviteUser(board.id, email);
-            setEmail('');
+            await boardService.inviteUser(board.id, userId);
+            setSearchQuery('');
+            setSearchResults([]);
+            alert('Convite enviado com sucesso!');
             onUpdate();
         } catch (err: any) {
             setError(err.response?.data?.error || 'Erro ao convidar usuário');
@@ -713,6 +837,57 @@ const MembersModal: React.FC<MembersModalProps> = ({ board, onClose, onUpdate })
                 </div>
 
                 <div style={{ padding: '1.5rem' }}>
+                    {/* Invite Section */}
+                    <div style={{ marginBottom: '2rem' }}>
+                        <h3 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
+                            Convidar Novo Membro
+                        </h3>
+                        <div className="form-group">
+                            <input
+                                type="text"
+                                className="input"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Buscar usuário por nome ou email..."
+                                disabled={loading}
+                            />
+                        </div>
+
+                        {searchResults.length > 0 && (
+                            <div style={{
+                                marginTop: '0.5rem',
+                                background: 'var(--bg-secondary)',
+                                borderRadius: '8px',
+                                maxHeight: '200px',
+                                overflowY: 'auto'
+                            }}>
+                                {searchResults.map(user => (
+                                    <div key={user.id} style={{
+                                        padding: '0.75rem',
+                                        borderBottom: '1px solid var(--border-color)',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        cursor: loading ? 'not-allowed' : 'pointer',
+                                        opacity: loading ? 0.7 : 1
+                                    }} onClick={() => !loading && handleInvite(user.id)}>
+                                        <div>
+                                            <div style={{ fontWeight: 500 }}>{user.name}</div>
+                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{user.email}</div>
+                                        </div>
+                                        <button
+                                            className="btn btn-primary btn-sm"
+                                            disabled={loading}
+                                        >
+                                            {loading ? '...' : 'Convidar'}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {error && <p className="error-message" style={{ marginTop: '0.5rem' }}>{error}</p>}
+                    </div>
+
                     {/* Owner Section */}
                     <div style={{ marginBottom: '1.5rem' }}>
                         <h3 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
@@ -800,55 +975,21 @@ const MembersModal: React.FC<MembersModalProps> = ({ board, onClose, onUpdate })
                                                 {member.email}
                                             </div>
                                         </div>
-                                        <button
-                                            className="btn-icon"
-                                            onClick={() => handleRemove(member.id)}
-                                            title="Remover"
-                                            style={{ color: 'var(--danger-color)' }}
-                                        >
-                                            🗑️
-                                        </button>
+                                        {board.owner.id === JSON.parse(localStorage.getItem('user') || '{}').id && (
+                                            <button
+                                                className="btn-icon"
+                                                onClick={() => handleRemove(member.id)}
+                                                title="Remover"
+                                                style={{ color: 'var(--danger-color)' }}
+                                            >
+                                                🗑️
+                                            </button>
+                                        )}
                                     </div>
                                 ))}
                             </div>
                         )}
                     </div>
-
-                    {/* Invite Form */}
-                    <form onSubmit={handleInvite}>
-                        <div className="form-group">
-                            <label className="form-label">Convidar por Email</label>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <input
-                                    type="email"
-                                    className="input"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="email@exemplo.com"
-                                    required
-                                    disabled={loading}
-                                />
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Convidando...' : 'Convidar'}
-                                </button>
-                            </div>
-                            {error && (
-                                <p style={{ color: 'var(--danger-color)', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                                    {error}
-                                </p>
-                            )}
-                        </div>
-                    </form>
-                </div>
-
-                <div className="modal-actions">
-                    <button type="button" className="btn btn-secondary" onClick={onClose}>
-                        Fechar
-                    </button>
                 </div>
             </div>
         </div>

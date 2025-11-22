@@ -35,7 +35,13 @@ export const userService = {
         await api.delete(`/users/${id}`);
     },
 
-    async updatePassword(id: number, password: string): Promise<void> {
-        await api.patch(`/users/${id}/password`, { password });
+    async updatePassword(id: number, password: string) {
+        const response = await api.put(`/users/${id}/password`, { password });
+        return response.data;
     },
+
+    async search(query: string) {
+        const response = await api.get('/users', { params: { search: query } });
+        return response.data.data; // Assuming the API returns { data: users, ... }
+    }
 };

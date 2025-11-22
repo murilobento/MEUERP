@@ -27,13 +27,24 @@ export const boardService = {
     },
 
     // Member operations
-    async inviteUser(boardId: number, email: string): Promise<Board> {
-        const response = await api.post(`/boards/${boardId}/members`, { email });
+    async inviteUser(boardId: number, userId: number) {
+        const response = await api.post(`/boards/${boardId}/members`, { userId });
         return response.data;
     },
 
-    async removeUser(boardId: number, userId: number): Promise<Board> {
+    async removeUser(boardId: number, userId: number) {
         const response = await api.delete(`/boards/${boardId}/members/${userId}`);
+        return response.data;
+    },
+
+    // Invitation operations
+    async listPendingInvitations() {
+        const response = await api.get('/invitations');
+        return response.data;
+    },
+
+    async respondToInvitation(invitationId: number, status: 'ACCEPTED' | 'REJECTED') {
+        const response = await api.put(`/invitations/${invitationId}/respond`, { status });
         return response.data;
     },
 
