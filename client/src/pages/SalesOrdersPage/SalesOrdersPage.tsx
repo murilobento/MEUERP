@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
-import { Plus, Edit2, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, RefreshCw } from 'lucide-react';
 import type { Column } from '../../components/DataTable/DataTable';
 import DataTable from '../../components/DataTable/DataTable';
 import { Sheet } from '../../components/ui/Sheet/Sheet';
@@ -28,7 +28,9 @@ const SalesOrdersPage: React.FC = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isReversalOpen, setIsReversalOpen] = useState(false);
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
+  const [saleToReverse, setSaleToReverse] = useState<Sale | null>(null);
   const [formLoading, setFormLoading] = useState(false);
 
   const loadSales = useCallback(async () => {
@@ -69,7 +71,17 @@ const SalesOrdersPage: React.FC = () => {
     setFormLoading(true);
     try {
       await saleService.create(data);
-      toast.success('Pedido criado com sucesso!');
+      toast.success('Pedido criado com sucesso!', {
+        style: {
+          background: '#10B981',
+          color: '#fff',
+          fontWeight: 'bold',
+        },
+        iconTheme: {
+          primary: '#fff',
+          secondary: '#10B981',
+        },
+      });
       setIsCreateOpen(false);
       loadSales();
     } catch (error) {
@@ -98,7 +110,17 @@ const SalesOrdersPage: React.FC = () => {
     setFormLoading(true);
     try {
       await saleService.update(selectedSale.id, data);
-      toast.success('Pedido atualizado com sucesso!');
+      toast.success('Pedido atualizado com sucesso!', {
+        style: {
+          background: '#10B981',
+          color: '#fff',
+          fontWeight: 'bold',
+        },
+        iconTheme: {
+          primary: '#fff',
+          secondary: '#10B981',
+        },
+      });
       setIsEditOpen(false);
       loadSales();
     } catch (error) {
@@ -119,12 +141,58 @@ const SalesOrdersPage: React.FC = () => {
     if (!selectedSale) return;
     try {
       await saleService.delete(selectedSale.id);
-      toast.success('Pedido excluído com sucesso!');
+      toast.success('Pedido excluído com sucesso!', {
+        style: {
+          background: '#10B981',
+          color: '#fff',
+          fontWeight: 'bold',
+        },
+        iconTheme: {
+          primary: '#fff',
+          secondary: '#10B981',
+        },
+      });
       setIsDeleteOpen(false);
       loadSales();
     } catch (error) {
       console.error('Erro ao excluir pedido:', error);
       toast.error('Erro ao excluir pedido');
+    }
+  };
+
+  const handleReversalClick = (sale: Sale, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSaleToReverse(sale);
+    setIsReversalOpen(true);
+  };
+
+  const handleConfirmReversal = async () => {
+    if (!saleToReverse) return;
+    try {
+      // Assuming reversal is done by updating status to CANCELLED
+      // If there is a specific endpoint for reversal, it should be used here.
+      // Based on previous code: handleUpdate({ ...sale, status: 'CANCELLED' });
+      // But handleUpdate uses selectedSale, so we call service directly or reuse logic.
+
+      // Using service directly to avoid dependency on selectedSale state for this action
+      await saleService.update(saleToReverse.id, { status: 'PENDING' });
+
+      toast.success('Venda estornada com sucesso!', {
+        style: {
+          background: '#10B981',
+          color: '#fff',
+          fontWeight: 'bold',
+        },
+        iconTheme: {
+          primary: '#fff',
+          secondary: '#10B981',
+        },
+      });
+      setIsReversalOpen(false);
+      loadSales();
+    } catch (error) {
+      console.error('Erro ao estornar venda:', error);
+      toast.error('Erro ao estornar venda');
     }
   };
 
@@ -185,14 +253,9 @@ const SalesOrdersPage: React.FC = () => {
             <button
               className="icon-btn"
               title="Estornar Venda"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (window.confirm('Deseja realmente estornar esta venda? O estoque será devolvido.')) {
-                  handleUpdate({ ...sale, status: 'CANCELLED' });
-                }
-              }}
+              onClick={(e) => handleReversalClick(sale, e)}
             >
-              <Trash2 size={16} style={{ color: 'orange' }} />
+              <RefreshCw size={16} style={{ color: 'orange' }} />
             </button>
           ) : (
             <>
@@ -369,6 +432,18 @@ const SalesOrdersPage: React.FC = () => {
         confirmText="Excluir"
         cancelText="Cancelar"
         variant="danger"
+      />
+
+      {/* Dialog de Estorno */}
+      <AlertDialog
+        isOpen={isReversalOpen}
+        onClose={() => setIsReversalOpen(false)}
+        onConfirm={handleConfirmReversal}
+        title="Estornar Venda"
+        description={`Tem certeza que deseja estornar a venda #${saleToReverse?.number}? Esta ação irá devolver os itens ao estoque e alterar o status para Pendente.`}
+        confirmText="Confirmar Estorno"
+        cancelText="Cancelar"
+        variant="warning"
       />
     </div>
   );

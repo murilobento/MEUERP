@@ -137,8 +137,8 @@ export const SaleService = {
 
       if (!currentSale) throw new Error('Venda não encontrada');
 
-      // Prevent editing if already confirmed, unless cancelling
-      if (currentSale.status === 'CONFIRMED' && data.status !== 'CANCELLED') {
+      // Prevent editing if already confirmed, unless cancelling or reverting to pending
+      if (currentSale.status === 'CONFIRMED' && data.status !== 'CANCELLED' && data.status !== 'PENDING') {
         throw new Error('Não é possível editar uma venda concluída. Apenas estorno é permitido.');
       }
 
@@ -152,8 +152,8 @@ export const SaleService = {
             data: { stock: { decrement: item.quantity } }
           });
         }
-      } else if (currentSale.status === 'CONFIRMED' && data.status === 'CANCELLED') {
-        // Confirmed -> Cancelled: Increase Stock (Reverse)
+      } else if (currentSale.status === 'CONFIRMED' && (data.status === 'CANCELLED' || data.status === 'PENDING')) {
+        // Confirmed -> Cancelled/Pending: Increase Stock (Reverse)
         for (const item of currentSale.items) {
           await tx.product.update({
             where: { id: item.productId },
