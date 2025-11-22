@@ -84,6 +84,10 @@ export const SaleService = {
           const product = await tx.product.findUnique({ where: { id: item.productId } });
           if (!product) throw new Error(`Produto ${item.productId} não encontrado`);
 
+          if (product.stock < item.quantity) {
+            throw new Error(`Não é possível concluir a venda. O produto "${product.name}" ficaria com estoque negativo. Estoque disponível: ${product.stock}.`);
+          }
+
           // Update stock
           await tx.product.update({
             where: { id: item.productId },
@@ -147,6 +151,13 @@ export const SaleService = {
         // Pending -> Confirmed: Decrease Stock
         const itemsToProcess = data.items ? data.items : currentSale.items;
         for (const item of itemsToProcess) {
+          const product = await tx.product.findUnique({ where: { id: item.productId } });
+          if (!product) throw new Error(`Produto ${item.productId} não encontrado`);
+
+          if (product.stock < item.quantity) {
+            throw new Error(`Não é possível concluir a venda. O produto "${product.name}" ficaria com estoque negativo. Estoque disponível: ${product.stock}.`);
+          }
+
           await tx.product.update({
             where: { id: item.productId },
             data: { stock: { decrement: item.quantity } }

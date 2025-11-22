@@ -84,9 +84,10 @@ const SalesOrdersPage: React.FC = () => {
       });
       setIsCreateOpen(false);
       loadSales();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao criar pedido:', error);
-      toast.error('Erro ao criar pedido');
+      const errorMessage = error.response?.data?.error || 'Erro ao criar pedido';
+      toast.error(errorMessage);
     } finally {
       setFormLoading(false);
     }
@@ -123,9 +124,10 @@ const SalesOrdersPage: React.FC = () => {
       });
       setIsEditOpen(false);
       loadSales();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao atualizar pedido:', error);
-      toast.error('Erro ao atualizar pedido');
+      const errorMessage = error.response?.data?.error || 'Erro ao atualizar pedido';
+      toast.error(errorMessage);
     } finally {
       setFormLoading(false);
     }

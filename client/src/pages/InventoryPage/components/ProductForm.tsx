@@ -149,7 +149,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                                     required
                                     className="select"
                                     value={formData.categoryId || ''}
-                                    onChange={(e) => handleChange('categoryId', Number(e.target.value))}
+                                    onChange={(e) => handleChange('categoryId', e.target.value ? Number(e.target.value) : undefined)}
                                 >
                                     <option value="">Selecione...</option>
                                     {categories.map(cat => (
