@@ -29,32 +29,32 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
 
     return (
         <div
-            className="kanban-column"
+            className="min-w-[300px] max-w-[300px] bg-bg-tertiary rounded-lg p-3 flex flex-col max-h-full border border-border"
             onDragOver={onDragOver}
             onDrop={(e) => onDrop(e, column.id)}
         >
-            <div className="column-header">
-                <div className="column-title-wrapper">
+            <div className="flex justify-between items-center mb-3 p-2">
+                <div className="flex items-center gap-2">
                     <div
-                        className="column-color-dot"
+                        className="w-2 h-2 rounded-full"
                         style={{ background: column.color }}
                     />
-                    <h3 className="column-title">{column.title}</h3>
-                    <span className="column-count">{column.cards.length}</span>
+                    <h3 className="text-sm font-semibold text-text-primary m-0 uppercase tracking-wide">{column.title}</h3>
+                    <span className="bg-bg-primary px-2 py-0.5 rounded-full text-xs font-medium text-text-secondary border border-border">{column.cards.length}</span>
                 </div>
 
                 <div style={{ position: 'relative' }}>
                     <button
-                        className="btn-icon"
+                        className="p-1 bg-transparent border-none cursor-pointer rounded text-text-tertiary transition-all hover:bg-bg-secondary hover:text-text-primary"
                         onClick={() => setShowMenu(!showMenu)}
                     >
                         ⋮
                     </button>
 
                     {showMenu && (
-                        <div className="column-menu-dropdown">
+                        <div className="absolute right-0 top-full bg-bg-primary border border-border rounded-md shadow-md p-1 z-10 min-w-[150px]">
                             <button
-                                className="column-menu-item"
+                                className="w-full p-2 bg-none border-none text-left cursor-pointer rounded text-sm text-text-primary transition-all hover:bg-bg-secondary"
                                 onClick={() => {
                                     onEditColumn(column);
                                     setShowMenu(false);
@@ -63,7 +63,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
                                 ✏️ Editar
                             </button>
                             <button
-                                className="column-menu-item delete"
+                                className="w-full p-2 bg-none border-none text-left cursor-pointer rounded text-sm text-danger transition-all hover:bg-danger-light"
                                 onClick={() => {
                                     if (confirm('Tem certeza que deseja excluir esta coluna?')) {
                                         onDeleteColumn(column.id);
@@ -78,7 +78,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 </div>
             </div>
 
-            <div className="cards-list">
+            <div className="flex-1 overflow-y-auto flex flex-col gap-3 p-1 min-h-[50px] scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                 {column.cards.map((card) => (
                     <KanbanCard
                         key={card.id}
@@ -91,7 +91,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
             </div>
 
             <button
-                className="add-card-btn"
+                className="w-full p-2 bg-transparent border border-dashed border-border rounded-md text-text-secondary text-sm cursor-pointer transition-all mt-2 flex items-center justify-center gap-2 hover:bg-bg-primary hover:border-primary hover:text-primary"
                 onClick={() => onAddCard(column.id)}
             >
                 + Adicionar Card

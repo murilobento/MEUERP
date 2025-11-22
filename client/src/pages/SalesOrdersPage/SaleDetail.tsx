@@ -1,7 +1,6 @@
 import React from 'react';
 import { Calendar, User, CreditCard, FileText } from 'lucide-react';
 import type { Sale } from '../../types';
-import './SalesOrdersPage.css';
 
 interface SaleDetailProps {
     sale: Sale;
@@ -45,108 +44,117 @@ const SaleDetail: React.FC<SaleDetailProps> = ({ sale }) => {
         }
     };
 
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'PENDING': return 'bg-warning-light text-warning';
+            case 'CONFIRMED': return 'bg-success-light text-success';
+            case 'CANCELLED': return 'bg-danger-light text-danger';
+            default: return 'bg-bg-tertiary text-text-secondary';
+        }
+    };
+
     return (
-        <div className="sale-detail">
-            <div className="detail-header">
-                <div className="detail-title">
-                    <h2>Pedido #{sale.number}</h2>
-                    <span className={`status-badge ${sale.status.toLowerCase()}`}>
+        <div className="flex flex-col gap-6 p-4">
+            <div className="flex justify-between items-start pb-4 border-b border-border">
+                <div className="flex flex-col gap-2">
+                    <h2 className="text-xl font-semibold text-text-primary m-0">Pedido #{sale.number}</h2>
+                    <span className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-full w-fit ${getStatusColor(sale.status)}`}>
                         {getStatusLabel(sale.status)}
                     </span>
                 </div>
-                <div className="detail-meta">
-                    <div className="meta-item">
+                <div className="flex gap-4 text-sm text-text-secondary">
+                    <div className="flex items-center gap-2">
                         <Calendar size={16} />
                         <span>{formatDate(sale.date)}</span>
                     </div>
                 </div>
             </div>
 
-            <div className="detail-section">
-                <h3>
+            <div className="flex flex-col gap-3">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-text-primary uppercase tracking-wide mb-2">
                     <User size={18} />
                     Informações do Cliente
                 </h3>
-                <div className="info-grid">
-                    <div className="info-item">
-                        <label>Nome</label>
-                        <span>{sale.customer.name}</span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-medium text-text-secondary uppercase">Nome</label>
+                        <span className="text-sm text-text-primary">{sale.customer.name}</span>
                     </div>
-                    <div className="info-item">
-                        <label>Documento</label>
-                        <span>{sale.customer.document || '-'}</span>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-medium text-text-secondary uppercase">Documento</label>
+                        <span className="text-sm text-text-primary">{sale.customer.document || '-'}</span>
                     </div>
-                    <div className="info-item">
-                        <label>Email</label>
-                        <span>{sale.customer.email || '-'}</span>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-medium text-text-secondary uppercase">Email</label>
+                        <span className="text-sm text-text-primary">{sale.customer.email || '-'}</span>
                     </div>
-                    <div className="info-item">
-                        <label>Telefone</label>
-                        <span>{sale.customer.phone || '-'}</span>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-medium text-text-secondary uppercase">Telefone</label>
+                        <span className="text-sm text-text-primary">{sale.customer.phone || '-'}</span>
                     </div>
                 </div>
             </div>
 
-            <div className="detail-section">
-                <h3>Itens do Pedido</h3>
-                <div className="items-table-container">
-                    <table className="items-table">
+            <div className="flex flex-col gap-3">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-text-primary uppercase tracking-wide mb-2">Itens do Pedido</h3>
+                <div className="overflow-x-auto border border-border rounded-lg">
+                    <table className="w-full text-sm text-left border-collapse">
                         <thead>
                             <tr>
-                                <th>Produto</th>
-                                <th className="text-right">Qtd</th>
-                                <th className="text-right">Preço Unit.</th>
-                                <th className="text-right">Subtotal</th>
+                                <th className="bg-bg-tertiary text-text-secondary font-semibold px-4 py-2 border-b border-border">Produto</th>
+                                <th className="bg-bg-tertiary text-text-secondary font-semibold px-4 py-2 border-b border-border text-right">Qtd</th>
+                                <th className="bg-bg-tertiary text-text-secondary font-semibold px-4 py-2 border-b border-border text-right">Preço Unit.</th>
+                                <th className="bg-bg-tertiary text-text-secondary font-semibold px-4 py-2 border-b border-border text-right">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
                             {sale.items?.map((item) => (
                                 <tr key={item.id}>
-                                    <td>{item.product.name}</td>
-                                    <td className="text-right">{item.quantity}</td>
-                                    <td className="text-right">{formatCurrency(Number(item.price))}</td>
-                                    <td className="text-right">{formatCurrency(Number(item.subtotal))}</td>
+                                    <td className="px-4 py-2 border-b border-border text-text-primary">{item.product.name}</td>
+                                    <td className="px-4 py-2 border-b border-border text-text-primary text-right">{item.quantity}</td>
+                                    <td className="px-4 py-2 border-b border-border text-text-primary text-right">{formatCurrency(Number(item.price))}</td>
+                                    <td className="px-4 py-2 border-b border-border text-text-primary text-right">{formatCurrency(Number(item.subtotal))}</td>
                                 </tr>
                             ))}
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colSpan={3} className="text-right font-bold">Subtotal:</td>
-                                <td className="text-right">{formatCurrency(Number(sale.subtotal))}</td>
+                                <td colSpan={3} className="px-4 py-2 text-right font-bold text-text-primary">Subtotal:</td>
+                                <td className="px-4 py-2 text-right text-text-primary">{formatCurrency(Number(sale.subtotal))}</td>
                             </tr>
                             <tr>
-                                <td colSpan={3} className="text-right font-bold">Desconto:</td>
-                                <td className="text-right text-danger">-{formatCurrency(Number(sale.discount))}</td>
+                                <td colSpan={3} className="px-4 py-2 text-right font-bold text-text-primary">Desconto:</td>
+                                <td className="px-4 py-2 text-right text-danger">-{formatCurrency(Number(sale.discount))}</td>
                             </tr>
-                            <tr className="total-row">
-                                <td colSpan={3} className="text-right font-bold">Total:</td>
-                                <td className="text-right font-bold">{formatCurrency(Number(sale.total))}</td>
+                            <tr>
+                                <td colSpan={3} className="px-4 py-2 text-right font-bold text-text-primary border-t border-border">Total:</td>
+                                <td className="px-4 py-2 text-right font-bold text-text-primary border-t border-border">{formatCurrency(Number(sale.total))}</td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
 
-            <div className="detail-section">
-                <h3>
+            <div className="flex flex-col gap-3">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-text-primary uppercase tracking-wide mb-2">
                     <CreditCard size={18} />
                     Pagamento
                 </h3>
-                <div className="info-grid">
-                    <div className="info-item">
-                        <label>Forma de Pagamento</label>
-                        <span>{getPaymentMethodLabel(sale.paymentMethod)}</span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-medium text-text-secondary uppercase">Forma de Pagamento</label>
+                        <span className="text-sm text-text-primary">{getPaymentMethodLabel(sale.paymentMethod)}</span>
                     </div>
                 </div>
             </div>
 
             {sale.notes && (
-                <div className="detail-section">
-                    <h3>
+                <div className="flex flex-col gap-3">
+                    <h3 className="flex items-center gap-2 text-sm font-semibold text-text-primary uppercase tracking-wide mb-2">
                         <FileText size={18} />
                         Observações
                     </h3>
-                    <p className="notes-text">{sale.notes}</p>
+                    <p className="text-sm text-text-primary bg-bg-secondary p-3 rounded-md border border-border">{sale.notes}</p>
                 </div>
             )}
         </div>

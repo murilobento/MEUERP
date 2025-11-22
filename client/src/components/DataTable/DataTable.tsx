@@ -66,71 +66,88 @@ function DataTable<T>({
 
     return (
         <div className="datatable-container">
-            <div className="datatable-wrapper">
-                <table className="datatable">
-                    <thead>
-                        <tr>
-                            {columns.map((col, index) => (
-                                <th
-                                    key={index}
-                                    style={{ width: col.width }}
-                                    onClick={() => col.sortable && handleSort(col.key as string)}
-                                    className={col.sortable ? 'sortable' : ''}
-                                >
-                                    <div className="th-content">
-                                        {col.header}
-                                        {col.sortable && (
-                                            <span className="sort-icon">
-                                                {sortConfig?.key === col.key ? (
-                                                    sortConfig.direction === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />
-                                                ) : (
-                                                    <ArrowUpDown size={14} />
+            {/* Mobile-friendly horizontal scroll wrapper */}
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="inline-block min-w-full align-middle px-4 sm:px-0">
+                    <div className="datatable-wrapper">
+                        <table className="datatable min-w-full">
+                            <thead>
+                                <tr>
+                                    {columns.map((col, index) => (
+                                        <th
+                                            key={index}
+                                            style={{ width: col.width }}
+                                            onClick={() => col.sortable && handleSort(col.key as string)}
+                                            className={col.sortable ? 'sortable' : ''}
+                                        >
+                                            <div className="th-content">
+                                                {col.header}
+                                                {col.sortable && (
+                                                    <span className="sort-icon">
+                                                        {sortConfig?.key === col.key ? (
+                                                            sortConfig.direction === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />
+                                                        ) : (
+                                                            <ArrowUpDown size={14} />
+                                                        )}
+                                                    </span>
                                                 )}
-                                            </span>
-                                        )}
-                                    </div>
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map((item, rowIndex) => (
-                            <tr
-                                key={rowIndex}
-                                onClick={() => onRowClick && onRowClick(item)}
-                                className={onRowClick ? 'clickable-row' : ''}
-                            >
-                                {columns.map((col, colIndex) => (
-                                    <td key={colIndex}>
-                                        {col.render ? col.render(item) : (item as any)[col.key]}
-                                    </td>
+                                            </div>
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.map((item, rowIndex) => (
+                                    <tr
+                                        key={rowIndex}
+                                        onClick={() => onRowClick && onRowClick(item)}
+                                        className={onRowClick ? 'clickable-row' : ''}
+                                    >
+                                        {columns.map((col, colIndex) => (
+                                            <td key={colIndex}>
+                                                {col.render ? col.render(item) : (item as any)[col.key]}
+                                            </td>
+                                        ))}
+                                    </tr>
                                 ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             {pagination && (
-                <div className="datatable-footer">
-                    <div className="pagination-info">
-                        Mostrando <strong>{((pagination.page - 1) * pagination.limit) + 1}</strong> a <strong>{Math.min(pagination.page * pagination.limit, pagination.total)}</strong> de <strong>{pagination.total}</strong> registros
+                <div className="datatable-footer flex-col sm:flex-row gap-3 sm:gap-0">
+                    <div className="pagination-info text-xs sm:text-sm text-center sm:text-left">
+                        <span className="hidden sm:inline">Mostrando </span>
+                        <strong>{((pagination.page - 1) * pagination.limit) + 1}</strong> a <strong>{Math.min(pagination.page * pagination.limit, pagination.total)}</strong> de <strong>{pagination.total}</strong>
+                        <span className="hidden sm:inline"> registros</span>
                     </div>
                     <div className="pagination-controls">
                         <button
                             disabled={pagination.page === 1}
                             onClick={() => onPageChange && onPageChange(pagination.page - 1)}
+                            className="min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px]"
+                            aria-label="Página anterior"
                         >
                             <ChevronLeft size={16} />
                         </button>
                         {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-                            .filter(p => p === 1 || p === pagination.totalPages || Math.abs(p - pagination.page) <= 1)
+                            .filter(p => {
+                                // On mobile, show fewer page numbers
+                                if (window.innerWidth < 640) {
+                                    return p === 1 || p === pagination.totalPages || p === pagination.page;
+                                }
+                                return p === 1 || p === pagination.totalPages || Math.abs(p - pagination.page) <= 1;
+                            })
                             .map((p, i, arr) => (
                                 <React.Fragment key={p}>
                                     {i > 0 && arr[i - 1] !== p - 1 && <span className="pagination-ellipsis">...</span>}
                                     <button
-                                        className={pagination.page === p ? 'active' : ''}
+                                        className={`min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] ${pagination.page === p ? 'active' : ''}`}
                                         onClick={() => onPageChange && onPageChange(p)}
+                                        aria-label={`Página ${p}`}
+                                        aria-current={pagination.page === p ? 'page' : undefined}
                                     >
                                         {p}
                                     </button>
@@ -140,6 +157,8 @@ function DataTable<T>({
                         <button
                             disabled={pagination.page === pagination.totalPages}
                             onClick={() => onPageChange && onPageChange(pagination.page + 1)}
+                            className="min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px]"
+                            aria-label="Próxima página"
                         >
                             <ChevronRight size={16} />
                         </button>

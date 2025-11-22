@@ -4,7 +4,6 @@ import { toast } from 'react-hot-toast';
 import { categoryService } from '../../../services/categoryService';
 import type { Category } from '../../../types';
 import { AlertDialog } from '../../../components/ui/AlertDialog/AlertDialog';
-import './CategoryManager.css';
 
 interface CategoryManagerProps {
     isOpen: boolean;
@@ -130,36 +129,36 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ isOpen, onClose }) =>
     if (!isOpen) return null;
 
     return (
-        <div className="category-modal-overlay">
-            <div className="category-modal">
-                <div className="category-modal-header">
-                    <h2 className="category-modal-title">Gerenciar Categorias</h2>
-                    <button onClick={onClose} className="category-modal-close">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="bg-bg-primary w-full max-w-md rounded-xl shadow-xl border border-border overflow-hidden">
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                    <h2 className="text-lg font-semibold text-text-primary">Gerenciar Categorias</h2>
+                    <button onClick={onClose} className="p-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors">
                         <X size={20} />
                     </button>
                 </div>
 
-                <div className="category-modal-body">
-                    <form onSubmit={handleSubmit} className="category-form">
+                <div className="p-4">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-3 mb-6">
                         <input
                             type="text"
                             placeholder="Nova Categoria (ex: Bebidas)"
-                            className="input"
+                            className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                             value={newCategoryName}
                             onChange={(e) => setNewCategoryName(e.target.value)}
                         />
                         <input
                             type="text"
                             placeholder="Descrição (Opcional)"
-                            className="input"
+                            className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                             value={newCategoryDesc}
                             onChange={(e) => setNewCategoryDesc(e.target.value)}
                         />
-                        <div className="category-form-actions">
+                        <div className="flex gap-2">
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="btn btn-primary"
+                                className="flex-1 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors disabled:opacity-50"
                             >
                                 {loading ? 'Salvando...' : (editingId ? 'Atualizar Categoria' : 'Adicionar Categoria')}
                             </button>
@@ -167,7 +166,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ isOpen, onClose }) =>
                                 <button
                                     type="button"
                                     onClick={handleCancelEdit}
-                                    className="btn btn-secondary btn-cancel"
+                                    className="px-4 py-2 bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors"
                                 >
                                     Cancelar
                                 </button>
@@ -175,32 +174,32 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ isOpen, onClose }) =>
                         </div>
                     </form>
 
-                    <div className="category-list">
+                    <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto">
                         {categories.map(category => (
-                            <div key={category.id} className="category-item">
-                                <div className="category-item-info">
+                            <div key={category.id} className="flex items-center justify-between p-3 bg-bg-secondary rounded-lg hover:bg-bg-tertiary transition-colors group">
+                                <div className="flex-1">
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <div className="category-item-name">{category.name}</div>
+                                        <div className="font-medium text-text-primary">{category.name}</div>
                                         {category._count && category._count.products > 0 && (
-                                            <span className="badge badge-primary">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-light text-primary">
                                                 {category._count.products} {category._count.products === 1 ? 'produto' : 'produtos'}
                                             </span>
                                         )}
                                     </div>
                                     {category.description && (
-                                        <div className="category-item-description">{category.description}</div>
+                                        <div className="text-xs text-text-secondary mt-0.5">{category.description}</div>
                                     )}
                                 </div>
-                                <div className="category-item-actions">
+                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
                                         onClick={() => handleEdit(category)}
-                                        className="category-item-action"
+                                        className="p-1 text-text-secondary hover:text-primary transition-colors"
                                     >
                                         <Edit2 size={16} />
                                     </button>
                                     <button
                                         onClick={() => handleDeleteClick(category)}
-                                        className="category-item-action delete"
+                                        className="p-1 text-text-secondary hover:text-danger transition-colors"
                                     >
                                         <Trash2 size={16} />
                                     </button>
@@ -208,7 +207,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ isOpen, onClose }) =>
                             </div>
                         ))}
                         {categories.length === 0 && (
-                            <div className="category-list-empty">
+                            <div className="text-center text-text-secondary py-4">
                                 Nenhuma categoria cadastrada.
                             </div>
                         )}

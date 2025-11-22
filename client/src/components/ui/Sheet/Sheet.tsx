@@ -43,7 +43,11 @@ export const Sheet: React.FC<SheetProps> = ({
                         <h2>{title}</h2>
                         {headerRight}
                     </div>
-                    <button className="close-btn" onClick={onClose}>
+                    <button
+                        className="close-btn"
+                        onClick={onClose}
+                        aria-label="Fechar"
+                    >
                         <X size={24} />
                     </button>
                 </div>

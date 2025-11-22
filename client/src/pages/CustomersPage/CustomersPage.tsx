@@ -11,7 +11,6 @@ import type { Customer, CustomerFilters } from '../../types';
 import CustomerForm from './CustomerForm';
 import CustomerDetail from './CustomerDetail';
 import FilterBar from '../../components/FilterBar/FilterBar';
-import './CustomersPage.css';
 
 const CustomersPage: React.FC = () => {
     const [customers, setCustomers] = useState<Customer[]>([]);
@@ -50,8 +49,6 @@ const CustomersPage: React.FC = () => {
     useEffect(() => {
         loadCustomers();
     }, [loadCustomers]);
-
-
 
     const handlePageChange = (page: number) => {
         setFilters(prev => ({ ...prev, page }));
@@ -149,13 +146,13 @@ const CustomersPage: React.FC = () => {
             key: 'name',
             header: 'CLIENTE',
             render: (customer) => (
-                <div className="customer-cell">
-                    <div className="customer-avatar">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-info-light text-info flex items-center justify-center font-semibold text-sm">
                         {customer.name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="customer-info">
-                        <span className="customer-name">{customer.name}</span>
-                        <span className="customer-type">
+                    <div className="flex flex-col">
+                        <span className="font-medium text-text-primary leading-tight">{customer.name}</span>
+                        <span className="text-xs text-text-secondary leading-tight">
                             {customer.type === 'INDIVIDUAL' ? 'Pessoa Física' : 'Pessoa Jurídica'}
                         </span>
                     </div>
@@ -166,7 +163,7 @@ const CustomersPage: React.FC = () => {
             key: 'status',
             header: 'STATUS',
             render: (customer) => (
-                <span className={`status-badge ${customer.status === 'ACTIVE' ? 'active' : 'inactive'}`}>
+                <span className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-full ${customer.status === 'ACTIVE' ? 'bg-success-light text-success' : 'bg-danger-light text-danger'}`}>
                     {customer.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                 </span>
             )
@@ -175,9 +172,9 @@ const CustomersPage: React.FC = () => {
             key: 'email',
             header: 'CONTATO',
             render: (customer) => (
-                <div className="contact-info">
+                <div className="flex flex-col text-sm text-text-primary">
                     {customer.email && <div>{customer.email}</div>}
-                    {customer.phone && <div className="phone-text">{customer.phone}</div>}
+                    {customer.phone && <div className="text-xs text-text-secondary">{customer.phone}</div>}
                 </div>
             )
         },
@@ -195,23 +192,23 @@ const CustomersPage: React.FC = () => {
             key: 'actions',
             header: 'AÇÕES',
             render: (customer) => (
-                <div className="actions-cell">
+                <div className="flex gap-2 justify-end">
                     <button
-                        className="icon-btn"
+                        className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary"
                         title="Editar"
                         onClick={(e) => handleEdit(customer, e)}
                     >
                         <Edit2 size={16} />
                     </button>
                     <button
-                        className="icon-btn"
+                        className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary"
                         title="Visualizar"
                         onClick={(e) => handleView(customer, e)}
                     >
                         <Eye size={16} />
                     </button>
                     <button
-                        className="icon-btn delete-btn"
+                        className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-danger-light hover:text-danger"
                         title="Excluir"
                         onClick={(e) => handleDeleteClick(customer, e)}
                     >
@@ -224,22 +221,23 @@ const CustomersPage: React.FC = () => {
     ];
 
     return (
-        <div className="page-container">
-            <div className="page-header">
-                <div className="page-header-content">
-                    <div className="breadcrumb">
+        <div className="p-6 h-full flex flex-col overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-border">
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 text-sm text-text-secondary mb-1">
                         <span>Comercial</span>
                         <span>/</span>
                         <span>Clientes</span>
                     </div>
-                    <h1>Gestão de Clientes</h1>
+                    <h1 className="text-2xl font-semibold text-text-primary m-0">Gestão de Clientes</h1>
                 </div>
-                <button className="btn btn-primary" onClick={() => {
+                <button className="w-full sm:w-auto px-4 py-2 min-h-[44px] sm:min-h-[40px] bg-primary text-white rounded-md hover:bg-primary-hover transition-colors flex items-center justify-center gap-2" onClick={() => {
                     setCustomerStatus('ACTIVE');
                     setIsCreateOpen(true);
                 }}>
                     <Plus size={20} />
-                    Adicionar Novo Cliente
+                    <span className="hidden sm:inline">Adicionar Novo Cliente</span>
+                    <span className="sm:hidden">Novo Cliente</span>
                 </button>
             </div>
 
@@ -258,7 +256,7 @@ const CustomersPage: React.FC = () => {
                 placeholder="Buscar por nome, documento ou email..."
             />
 
-            <div className="table-container">
+            <div className="flex-1 overflow-hidden rounded-lg border border-border bg-bg-primary">
                 <DataTable
                     data={customers}
                     columns={columns}
@@ -281,8 +279,8 @@ const CustomersPage: React.FC = () => {
                 title="Novo Cliente"
                 size="lg"
                 headerRight={
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                    <div className="flex items-center gap-3">
+                        <span className="text-sm text-text-secondary">
                             Status: {customerStatus === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                         </span>
                         <Switch
@@ -307,8 +305,8 @@ const CustomersPage: React.FC = () => {
                 title="Editar Cliente"
                 size="lg"
                 headerRight={
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                    <div className="flex items-center gap-3">
+                        <span className="text-sm text-text-secondary">
                             Status: {customerStatus === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                         </span>
                         <Switch

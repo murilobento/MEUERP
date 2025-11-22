@@ -9,7 +9,6 @@ import { Sheet } from '../../components/ui/Sheet/Sheet';
 import { AlertDialog } from '../../components/ui/AlertDialog/AlertDialog';
 import { ProductForm, CategoryManager } from './components';
 import ProductDetail from './components/ProductDetail';
-import './InventoryPage.css';
 
 const InventoryPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -165,11 +164,11 @@ const InventoryPage: React.FC = () => {
             key: 'imageUrl',
             header: 'IMG',
             render: (product) => (
-                <div className="product-image-cell">
+                <div className="flex items-center justify-center">
                     {product.imageUrl ? (
-                        <img src={product.imageUrl} alt={product.name} className="product-thumb" />
+                        <img src={product.imageUrl} alt={product.name} className="w-10 h-10 rounded-lg object-cover bg-bg-secondary" />
                     ) : (
-                        <div className="product-thumb-placeholder">
+                        <div className="w-10 h-10 rounded-lg bg-bg-secondary text-text-secondary flex items-center justify-center font-semibold text-lg">
                             {product.name.charAt(0).toUpperCase()}
                         </div>
                     )}
@@ -181,9 +180,9 @@ const InventoryPage: React.FC = () => {
             key: 'name',
             header: 'PRODUTO',
             render: (product) => (
-                <div className="product-info-cell">
-                    <span className="product-name">{product.name}</span>
-                    <span className="product-code">{product.barcode || product.code || '-'}</span>
+                <div className="flex flex-col">
+                    <span className="font-medium text-text-primary">{product.name}</span>
+                    <span className="text-xs text-text-secondary">{product.barcode || product.code || '-'}</span>
                 </div>
             )
         },
@@ -196,14 +195,14 @@ const InventoryPage: React.FC = () => {
             key: 'stock',
             header: 'ESTOQUE',
             render: (product) => (
-                <div className="stock-cell">
-                    <div className="stock-bar-container">
+                <div className="flex items-center gap-4">
+                    <div className="w-16 h-1.5 bg-bg-secondary rounded-full overflow-hidden">
                         <div
-                            className={`stock-bar ${product.stock <= product.minStock ? 'low' : 'good'}`}
+                            className={`h-full rounded-full transition-all duration-300 ${product.stock <= product.minStock ? 'bg-warning' : 'bg-success'}`}
                             style={{ width: `${Math.min((product.stock / (product.minStock * 3 || 10)) * 100, 100)}%` }}
                         />
                     </div>
-                    <span className="stock-value">{product.stock} {product.unit}</span>
+                    <span className="text-sm text-text-secondary min-w-[40px]">{product.stock} {product.unit}</span>
                 </div>
             )
         },
@@ -216,7 +215,7 @@ const InventoryPage: React.FC = () => {
             key: 'status',
             header: 'STATUS',
             render: (product) => (
-                <span className={`status-badge ${product.status === 'ACTIVE' ? 'active' : 'inactive'}`}>
+                <span className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-full ${product.status === 'ACTIVE' ? 'bg-success-light text-success' : 'bg-bg-tertiary text-text-secondary'}`}>
                     {product.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                 </span>
             )
@@ -225,14 +224,14 @@ const InventoryPage: React.FC = () => {
             key: 'actions',
             header: 'AÇÕES',
             render: (product) => (
-                <div className="actions-cell">
-                    <button className="icon-btn" title="Visualizar" onClick={(e) => handleView(product, e)}>
+                <div className="flex gap-2">
+                    <button className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary" title="Visualizar" onClick={(e) => handleView(product, e)}>
                         <Eye size={16} />
                     </button>
-                    <button className="icon-btn" title="Editar" onClick={(e) => handleEdit(product, e)}>
+                    <button className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary" title="Editar" onClick={(e) => handleEdit(product, e)}>
                         <Edit2 size={16} />
                     </button>
-                    <button className="icon-btn delete-btn" title="Excluir" onClick={(e) => handleDeleteClick(product, e)}>
+                    <button className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-danger-light hover:text-danger" title="Excluir" onClick={(e) => handleDeleteClick(product, e)}>
                         <Trash2 size={16} />
                     </button>
                 </div>
@@ -242,25 +241,26 @@ const InventoryPage: React.FC = () => {
     ];
 
     return (
-        <div className="page-container">
-            <div className="page-header">
-                <div className="page-header-content">
-                    <div className="breadcrumb">
+        <div className="p-6 h-full flex flex-col overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-border">
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 text-sm text-text-secondary mb-1">
                         <span>Módulo</span>
                         <span>/</span>
                         <span>Estoque</span>
                     </div>
-                    <h1>Gestão de Estoque</h1>
-                    <p className="page-subtitle">Gerencie catálogo de produtos e níveis de estoque.</p>
+                    <h1 className="text-2xl font-semibold text-text-primary m-0">Gestão de Estoque</h1>
+                    <p className="text-sm text-text-secondary mt-1">Gerencie catálogo de produtos e níveis de estoque.</p>
                 </div>
-                <div className="header-actions">
-                    <button className="btn btn-outline" onClick={() => setIsCategoryModalOpen(true)}>
+                <div className="flex gap-2 w-full sm:w-auto">
+                    <button className="flex-1 sm:flex-none px-4 py-2 min-h-[44px] sm:min-h-[40px] bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors flex items-center justify-center gap-2" onClick={() => setIsCategoryModalOpen(true)}>
                         <List size={18} />
                         Categorias
                     </button>
-                    <button className="btn btn-primary" onClick={handleCreate}>
+                    <button className="flex-1 sm:flex-none px-4 py-2 min-h-[44px] sm:min-h-[40px] bg-primary text-white rounded-md hover:bg-primary-hover transition-colors flex items-center justify-center gap-2" onClick={handleCreate}>
                         <Plus size={18} />
-                        Novo Produto
+                        <span className="hidden sm:inline">Novo Produto</span>
+                        <span className="sm:hidden">Novo</span>
                     </button>
                 </div>
             </div>
@@ -282,15 +282,17 @@ const InventoryPage: React.FC = () => {
                 placeholder="Buscar por nome, EAN ou categoria..."
             />
 
-            <DataTable
-                columns={columns}
-                data={products}
-                pagination={pagination}
-                onPageChange={setPage}
-                isLoading={loading}
-                emptyMessage="Nenhum produto encontrado."
-                onRowClick={(product) => handleView(product)}
-            />
+            <div className="flex-1 overflow-hidden rounded-lg border border-border bg-bg-primary">
+                <DataTable
+                    columns={columns}
+                    data={products}
+                    pagination={pagination}
+                    onPageChange={setPage}
+                    isLoading={loading}
+                    emptyMessage="Nenhum produto encontrado."
+                    onRowClick={(product) => handleView(product)}
+                />
+            </div>
 
             <Sheet
                 isOpen={isProductModalOpen}

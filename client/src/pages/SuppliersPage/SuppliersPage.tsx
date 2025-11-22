@@ -11,7 +11,6 @@ import type { Supplier, SupplierFilters } from '../../types';
 import SupplierForm from './SupplierForm';
 import SupplierDetail from './SupplierDetail';
 import FilterBar from '../../components/FilterBar/FilterBar';
-import './SuppliersPage.css';
 
 const SuppliersPage: React.FC = () => {
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -149,13 +148,13 @@ const SuppliersPage: React.FC = () => {
             key: 'name',
             header: 'FORNECEDOR',
             render: (supplier) => (
-                <div className="supplier-cell">
-                    <div className="supplier-avatar">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-info-light text-info flex items-center justify-center font-semibold text-sm">
                         {supplier.name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="supplier-info">
-                        <span className="supplier-name">{supplier.name}</span>
-                        <span className="supplier-type">
+                    <div className="flex flex-col">
+                        <span className="font-medium text-text-primary leading-tight">{supplier.name}</span>
+                        <span className="text-xs text-text-secondary leading-tight">
                             {supplier.type === 'INDIVIDUAL' ? 'Pessoa Física' : 'Pessoa Jurídica'}
                         </span>
                     </div>
@@ -166,7 +165,7 @@ const SuppliersPage: React.FC = () => {
             key: 'status',
             header: 'STATUS',
             render: (supplier) => (
-                <span className={`status-badge ${supplier.status === 'ACTIVE' ? 'active' : 'inactive'}`}>
+                <span className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-full ${supplier.status === 'ACTIVE' ? 'bg-success-light text-success' : 'bg-danger-light text-danger'}`}>
                     {supplier.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                 </span>
             )
@@ -175,9 +174,9 @@ const SuppliersPage: React.FC = () => {
             key: 'email',
             header: 'CONTATO',
             render: (supplier) => (
-                <div className="contact-info">
+                <div className="flex flex-col text-sm text-text-primary">
                     {supplier.email && <div>{supplier.email}</div>}
-                    {supplier.phone && <div className="phone-text">{supplier.phone}</div>}
+                    {supplier.phone && <div className="text-xs text-text-secondary">{supplier.phone}</div>}
                 </div>
             )
         },
@@ -195,23 +194,23 @@ const SuppliersPage: React.FC = () => {
             key: 'actions',
             header: 'AÇÕES',
             render: (supplier) => (
-                <div className="actions-cell">
+                <div className="flex gap-2 justify-end">
                     <button
-                        className="icon-btn"
+                        className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary"
                         title="Editar"
                         onClick={(e) => handleEdit(supplier, e)}
                     >
                         <Edit2 size={16} />
                     </button>
                     <button
-                        className="icon-btn"
+                        className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary"
                         title="Visualizar"
                         onClick={(e) => handleView(supplier, e)}
                     >
                         <Eye size={16} />
                     </button>
                     <button
-                        className="icon-btn delete-btn"
+                        className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-danger-light hover:text-danger"
                         title="Excluir"
                         onClick={(e) => handleDeleteClick(supplier, e)}
                     >
@@ -224,22 +223,23 @@ const SuppliersPage: React.FC = () => {
     ];
 
     return (
-        <div className="page-container">
-            <div className="page-header">
-                <div className="page-header-content">
-                    <div className="breadcrumb">
+        <div className="p-6 h-full flex flex-col overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-border">
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 text-sm text-text-secondary mb-1">
                         <span>Estoque</span>
                         <span>/</span>
                         <span>Fornecedores</span>
                     </div>
-                    <h1>Gestão de Fornecedores</h1>
+                    <h1 className="text-2xl font-semibold text-text-primary m-0">Gestão de Fornecedores</h1>
                 </div>
-                <button className="btn btn-primary" onClick={() => {
+                <button className="w-full sm:w-auto px-4 py-2 min-h-[44px] sm:min-h-[40px] bg-primary text-white rounded-md hover:bg-primary-hover transition-colors flex items-center justify-center gap-2" onClick={() => {
                     setSupplierStatus('ACTIVE');
                     setIsCreateOpen(true);
                 }}>
                     <Plus size={20} />
-                    Adicionar Novo Fornecedor
+                    <span className="hidden sm:inline">Adicionar Novo Fornecedor</span>
+                    <span className="sm:hidden">Novo Fornecedor</span>
                 </button>
             </div>
 
@@ -258,7 +258,7 @@ const SuppliersPage: React.FC = () => {
                 placeholder="Buscar por nome, documento ou email..."
             />
 
-            <div className="table-container">
+            <div className="flex-1 overflow-hidden rounded-lg border border-border bg-bg-primary">
                 <DataTable
                     data={suppliers}
                     columns={columns}

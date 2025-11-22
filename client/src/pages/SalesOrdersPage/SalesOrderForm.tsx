@@ -16,7 +16,6 @@ import { customerService } from '../../services/customerService';
 import { productService } from '../../services/productService';
 import type { Customer, Product, Sale } from '../../types';
 import Autocomplete from '../../components/ui/Autocomplete/Autocomplete';
-import './SalesOrdersPage.css';
 
 interface SalesOrderFormProps {
   initialData?: Sale | null;
@@ -213,12 +212,12 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
   }));
 
   return (
-    <form onSubmit={handleSubmit} className="sales-form">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-0 max-h-[80vh] overflow-hidden">
       {/* Tabs Header */}
-      <div className="sales-tabs-header">
+      <div className="flex gap-2 border-b-2 border-border pb-0 mb-4">
         <button
           type="button"
-          className={`sales-tab-btn ${activeTab === 'details' ? 'active' : ''}`}
+          className={`flex items-center gap-2 px-5 py-3 bg-transparent border-none border-b-2 text-text-secondary font-semibold text-sm cursor-pointer transition-all -mb-[2px] hover:text-primary hover:bg-bg-secondary ${activeTab === 'details' ? 'text-primary border-primary bg-transparent' : 'border-transparent'}`}
           onClick={() => setActiveTab('details')}
         >
           <ShoppingBag size={16} />
@@ -226,7 +225,7 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
         </button>
         <button
           type="button"
-          className={`sales-tab-btn ${activeTab === 'payment' ? 'active' : ''}`}
+          className={`flex items-center gap-2 px-5 py-3 bg-transparent border-none border-b-2 text-text-secondary font-semibold text-sm cursor-pointer transition-all -mb-[2px] hover:text-primary hover:bg-bg-secondary ${activeTab === 'payment' ? 'text-primary border-primary bg-transparent' : 'border-transparent'}`}
           onClick={() => setActiveTab('payment')}
         >
           <DollarSign size={16} />
@@ -236,11 +235,11 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
 
       {/* Tab Content */}
       {activeTab === 'details' ? (
-        <div className="sales-tab-content">
+        <div className="flex-1 overflow-y-auto flex flex-col gap-4 pr-1">
           {/* Header: Cliente, Data, Status */}
-          <div className="sales-form-header">
-            <div className="form-field">
-              <label className="form-label">CLIENTE</label>
+          <div className="grid grid-cols-[2fr_1fr_1fr] gap-4 mb-2">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">CLIENTE</label>
               <Autocomplete
                 options={customerOptions}
                 value={formData.customerId ? Number(formData.customerId) : ''}
@@ -249,23 +248,23 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
                 icon={<Search size={14} />}
               />
             </div>
-            <div className="form-field">
-              <label className="form-label">DATA</label>
-              <div className="input-with-icon">
-                <Calendar size={14} className="input-icon" />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">DATA</label>
+              <div className="relative flex items-center">
+                <Calendar size={14} className="absolute left-3 text-text-tertiary pointer-events-none" />
                 <input
                   type="date"
-                  className="form-input"
+                  className="h-9 pl-9 pr-3 text-sm border border-border rounded-md bg-bg-secondary text-text-primary transition-all w-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   required
                 />
               </div>
             </div>
-            <div className="form-field">
-              <label className="form-label">STATUS</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">STATUS</label>
               <select
-                className="form-select"
+                className="h-9 px-3 text-sm border border-border rounded-md bg-bg-secondary text-text-primary transition-all w-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               >
@@ -277,16 +276,16 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
           </div>
 
           {/* Items Section */}
-          <div className="sales-section">
-            <div className="section-title">
+          <div className="bg-bg-primary border border-border rounded-lg p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3 pb-2 border-b border-border">
               <ShoppingBag size={16} />
               <span>Itens do Pedido</span>
             </div>
 
             {/* Add Product Row */}
-            <div className="add-product-row">
-              <div className="form-field flex-1">
-                <label className="form-label-sm">ADICIONAR PRODUTO</label>
+            <div className="flex gap-3 items-end mb-3">
+              <div className="flex flex-col gap-1.5 flex-1">
+                <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">ADICIONAR PRODUTO</label>
                 <Autocomplete
                   options={productOptions}
                   value={selectedProduct}
@@ -295,37 +294,35 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
                   icon={<Package size={14} />}
                 />
               </div>
-              <div className="form-field" style={{ width: '140px' }}>
-                <label className="form-label-sm">PREÇO</label>
-                <div className="input-group-inline">
-                  <span className="input-prefix">R$</span>
+              <div className="flex flex-col gap-1.5 w-[140px]">
+                <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">PREÇO</label>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-semibold text-text-secondary min-w-[20px]">R$</span>
                   <input
                     type="number"
-                    className="form-input-sm"
+                    className="h-8 px-2.5 text-xs border border-border rounded-md bg-bg-secondary text-text-primary transition-all w-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light text-right flex-1"
                     min="0"
                     step="0.01"
                     value={itemPrice}
                     onChange={(e) => setItemPrice(Number(e.target.value))}
-                    style={{ flex: 1, textAlign: 'right' }}
                   />
                 </div>
               </div>
-              <div className="form-field" style={{ width: '80px' }}>
-                <label className="form-label-sm">QTD</label>
+              <div className="flex flex-col gap-1.5 w-[80px]">
+                <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">QTD</label>
                 <input
                   type="number"
-                  className="form-input-sm"
+                  className="h-8 px-2.5 text-xs border border-border rounded-md bg-bg-secondary text-text-primary transition-all w-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light text-center"
                   min="1"
                   value={itemQuantity}
                   onChange={(e) => setItemQuantity(Number(e.target.value))}
-                  style={{ textAlign: 'center' }}
                 />
               </div>
-              <div className="form-field" style={{ width: 'auto' }}>
-                <label className="form-label-sm">&nbsp;</label>
+              <div className="flex flex-col gap-1.5 w-auto">
+                <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">&nbsp;</label>
                 <button
                   type="button"
-                  className="btn-add-item"
+                  className="h-8 px-4 flex items-center gap-1.5 text-xs font-medium border-none rounded-md bg-primary text-white cursor-pointer transition-all whitespace-nowrap hover:bg-primary-dark hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleAddItem}
                   disabled={!selectedProduct}
                 >
@@ -337,38 +334,38 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
 
             {/* Items Table */}
             {items.length > 0 && (
-              <div className="items-list">
-                <table className="items-table-compact">
+              <div className="max-h-[240px] overflow-y-auto border border-border rounded-md bg-bg-secondary">
+                <table className="w-full border-separate border-spacing-0 text-xs">
                   <thead>
                     <tr>
-                      <th>Produto</th>
-                      <th style={{ width: '130px', textAlign: 'right' }}>Preço</th>
-                      <th style={{ width: '80px', textAlign: 'center' }}>Qtd</th>
-                      <th style={{ width: '110px', textAlign: 'right' }}>Total</th>
-                      <th style={{ width: '40px' }}></th>
+                      <th className="bg-bg-tertiary text-text-secondary font-semibold text-[11px] uppercase px-3 py-2 border-b border-border text-left sticky top-0 z-10">Produto</th>
+                      <th className="bg-bg-tertiary text-text-secondary font-semibold text-[11px] uppercase px-3 py-2 border-b border-border text-right sticky top-0 z-10 w-[130px]">Preço</th>
+                      <th className="bg-bg-tertiary text-text-secondary font-semibold text-[11px] uppercase px-3 py-2 border-b border-border text-center sticky top-0 z-10 w-[80px]">Qtd</th>
+                      <th className="bg-bg-tertiary text-text-secondary font-semibold text-[11px] uppercase px-3 py-2 border-b border-border text-right sticky top-0 z-10 w-[110px]">Total</th>
+                      <th className="bg-bg-tertiary text-text-secondary font-semibold text-[11px] uppercase px-3 py-2 border-b border-border sticky top-0 z-10 w-[40px]"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {items.map((item, index) => (
-                      <tr key={index}>
-                        <td>{item.productName}</td>
-                        <td style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: '0.8125rem' }}>R$ {item.price.toFixed(2)}</span>
+                      <tr key={index} className="hover:bg-bg-tertiary">
+                        <td className="px-3 py-2 border-b border-border text-text-primary">{item.productName}</td>
+                        <td className="px-3 py-2 border-b border-border text-text-primary text-right">
+                          <span className="text-[13px]">R$ {item.price.toFixed(2)}</span>
                         </td>
-                        <td style={{ textAlign: 'center' }}>
+                        <td className="px-3 py-2 border-b border-border text-text-primary text-center">
                           <input
                             type="number"
-                            className="qty-input"
+                            className="w-[50px] h-[26px] px-1.5 text-xs border border-border rounded bg-bg-primary text-text-primary text-center focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary-light"
                             min="1"
                             value={item.quantity}
                             onChange={(e) => handleUpdateItemQuantity(index, Number(e.target.value))}
                           />
                         </td>
-                        <td style={{ textAlign: 'right' }}>R$ {item.subtotal.toFixed(2)}</td>
-                        <td>
+                        <td className="px-3 py-2 border-b border-border text-text-primary text-right">R$ {item.subtotal.toFixed(2)}</td>
+                        <td className="px-3 py-2 border-b border-border text-text-primary">
                           <button
                             type="button"
-                            className="btn-remove-item"
+                            className="p-1 border-none rounded bg-transparent text-text-secondary cursor-pointer transition-all flex items-center justify-center hover:bg-red-100 hover:text-danger"
                             onClick={() => handleRemoveItem(index)}
                             title="Remover item"
                           >
@@ -385,18 +382,18 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
 
         </div>
       ) : (
-        <div className="sales-tab-content">
+        <div className="flex-1 overflow-y-auto flex flex-col gap-4 pr-1">
           {/* Payment Section */}
-          <div className="sales-section">
-            <div className="section-title">
+          <div className="bg-bg-primary border border-border rounded-lg p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3 pb-2 border-b border-border">
               <CreditCard size={16} />
               <span>Pagamento</span>
             </div>
-            <div className="payment-grid">
-              <div className="form-field">
-                <label className="form-label-sm">MÉTODO</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">MÉTODO</label>
                 <select
-                  className="form-select-sm"
+                  className="h-8 px-2.5 text-xs border border-border rounded-md bg-bg-secondary text-text-primary transition-all w-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                   value={formData.paymentMethod}
                   onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
                 >
@@ -408,10 +405,10 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
                   <option value="BOLETO">Boleto</option>
                 </select>
               </div>
-              <div className="form-field">
-                <label className="form-label-sm">STATUS</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">STATUS</label>
                 <select
-                  className="form-select-sm"
+                  className="h-8 px-2.5 text-xs border border-border rounded-md bg-bg-secondary text-text-primary transition-all w-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                   disabled
                   value={formData.status === 'CONFIRMED' ? 'PAID' : 'PENDING'}
                 >
@@ -423,35 +420,34 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
           </div>
 
           {/* Totals Section */}
-          <div className="sales-section">
-            <div className="section-title">
+          <div className="bg-bg-primary border border-border rounded-lg p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3 pb-2 border-b border-border">
               <DollarSign size={16} />
               <span>Totais</span>
             </div>
-            <div className="totals-grid">
-              <div className="form-field">
-                <label className="form-label-sm">DESCONTO</label>
-                <div className="discount-input-group">
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">DESCONTO</label>
+                <div className="flex gap-1.5 items-center">
                   <input
                     type="number"
-                    className="form-input-sm"
+                    className="h-8 px-2.5 text-xs border border-border rounded-md bg-bg-secondary text-text-primary transition-all w-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light flex-1 text-right"
                     min="0"
                     step="0.01"
                     value={formData.discount}
                     onChange={(e) => setFormData({ ...formData, discount: Number(e.target.value) })}
-                    style={{ flex: 1, textAlign: 'right' }}
                   />
-                  <div className="type-toggle">
+                  <div className="flex border border-border rounded overflow-hidden h-8 shrink-0">
                     <button
                       type="button"
-                      className={`toggle-option ${discountType === 'value' ? 'active' : ''}`}
+                      className={`flex-1 min-w-[36px] border-none text-xs font-semibold cursor-pointer transition-all px-2 hover:bg-bg-secondary active:bg-primary active:text-white ${discountType === 'value' ? 'bg-primary text-white' : 'bg-bg-primary text-text-secondary'}`}
                       onClick={() => setDiscountType('value')}
                     >
                       R$
                     </button>
                     <button
                       type="button"
-                      className={`toggle-option ${discountType === 'percent' ? 'active' : ''}`}
+                      className={`flex-1 min-w-[36px] border-none text-xs font-semibold cursor-pointer transition-all px-2 border-l border-border hover:bg-bg-secondary active:bg-primary active:text-white ${discountType === 'percent' ? 'bg-primary text-white' : 'bg-bg-primary text-text-secondary'}`}
                       onClick={() => setDiscountType('percent')}
                     >
                       %
@@ -459,36 +455,35 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
                   </div>
                 </div>
               </div>
-              <div className="form-field">
-                <label className="form-label-sm">FRETE</label>
-                <div className="input-group-inline">
-                  <span className="input-prefix">R$</span>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wide">FRETE</label>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-semibold text-text-secondary min-w-[20px]">R$</span>
                   <input
                     type="number"
-                    className="form-input-sm"
+                    className="h-8 px-2.5 text-xs border border-border rounded-md bg-bg-secondary text-text-primary transition-all w-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light flex-1 text-right"
                     min="0"
                     step="0.01"
                     value={freight}
                     onChange={(e) => setFreight(Number(e.target.value))}
-                    style={{ flex: 1, textAlign: 'right' }}
                   />
                 </div>
               </div>
             </div>
-            <div className="totals-summary">
-              <div className="total-line">
+            <div className="pt-3 border-t border-border flex flex-col gap-2">
+              <div className="flex justify-between items-center text-xs text-text-secondary">
                 <span>Subtotal</span>
                 <span>R$ {subtotal.toFixed(2)}</span>
               </div>
-              <div className="total-line discount-line">
+              <div className="flex justify-between items-center text-xs text-danger">
                 <span>Desconto</span>
                 <span>- R$ {discountValue.toFixed(2)}</span>
               </div>
-              <div className="total-line">
+              <div className="flex justify-between items-center text-xs text-text-secondary">
                 <span>Frete</span>
                 <span>+ R$ {freight.toFixed(2)}</span>
               </div>
-              <div className="total-line final-total">
+              <div className="mt-2 pt-3 border-t border-dashed border-border text-base font-bold text-text-primary flex justify-between items-center">
                 <span>Total Final</span>
                 <span>R$ {total.toFixed(2)}</span>
               </div>
@@ -496,13 +491,13 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
           </div>
 
           {/* Observations */}
-          <div className="sales-section">
-            <div className="section-title">
+          <div className="bg-bg-primary border border-border rounded-lg p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3 pb-2 border-b border-border">
               <FileText size={16} />
               <span>Observações</span>
             </div>
             <textarea
-              className="form-textarea"
+              className="p-2.5 text-sm border border-border rounded-md bg-bg-secondary text-text-primary font-inherit resize-y transition-all w-full min-h-[60px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
               rows={2}
               placeholder="Observações do pedido..."
               value={formData.notes}
@@ -514,11 +509,11 @@ const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ initialData, onSubmit, 
       )}
 
       {/* Actions - Always visible */}
-      <div className="sales-actions">
-        <button type="button" className="btn btn-secondary" onClick={onCancel}>
+      <div className="flex justify-end gap-3 pt-4 border-t border-border mt-auto">
+        <button type="button" className="px-4 py-2 bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors" onClick={onCancel}>
           Cancelar
         </button>
-        <button type="submit" className="btn btn-primary" disabled={loading}>
+        <button type="submit" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors flex items-center gap-2 disabled:opacity-50" disabled={loading}>
           <Save size={16} />
           Salvar Pedido
         </button>

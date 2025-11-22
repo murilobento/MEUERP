@@ -260,19 +260,20 @@ const UsersPage: React.FC = () => {
     ];
 
     return (
-        <div className="page-container">
-            <div className="page-header">
-                <div className="page-header-content">
-                    <div className="breadcrumb">
+        <div className="p-6 h-full flex flex-col overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-border">
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 text-sm text-text-secondary mb-1">
                         <span>Administrativo</span>
                         <span>/</span>
                         <span>Usuários</span>
                     </div>
-                    <h1>Gestão de Usuários</h1>
+                    <h1 className="text-2xl font-semibold text-text-primary m-0">Gestão de Usuários</h1>
                 </div>
-                <button className="btn btn-primary" onClick={handleCreate}>
+                <button className="w-full sm:w-auto px-4 py-2 min-h-[44px] sm:min-h-[40px] bg-primary text-white rounded-md hover:bg-primary-hover transition-colors flex items-center justify-center gap-2" onClick={handleCreate}>
                     <Plus size={18} />
-                    Adicionar Novo Usuário
+                    <span className="hidden sm:inline">Adicionar Novo Usuário</span>
+                    <span className="sm:hidden">Novo Usuário</span>
                 </button>
             </div>
 
@@ -293,15 +294,17 @@ const UsersPage: React.FC = () => {
                 placeholder="Buscar por nome, e-mail..."
             />
 
-            <DataTable
-                columns={columns}
-                data={users}
-                pagination={pagination}
-                onPageChange={setPage}
-                isLoading={loading}
-                emptyMessage="Nenhum usuário encontrado."
-                onRowClick={handleView}
-            />
+            <div className="flex-1 overflow-hidden rounded-lg border border-border bg-bg-primary">
+                <DataTable
+                    columns={columns}
+                    data={users}
+                    pagination={pagination}
+                    onPageChange={setPage}
+                    isLoading={loading}
+                    emptyMessage="Nenhum usuário encontrado."
+                    onRowClick={handleView}
+                />
+            </div>
 
             {/* Sheet para Create/Edit */}
             <Sheet

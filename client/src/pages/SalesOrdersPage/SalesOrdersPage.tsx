@@ -12,7 +12,6 @@ import type { Sale, SaleFilters } from '../../types';
 import SalesOrderForm from './SalesOrderForm';
 import SaleDetail from './SaleDetail';
 import FilterBar from '../../components/FilterBar/FilterBar';
-import './SalesOrdersPage.css';
 
 const SalesOrdersPage: React.FC = () => {
   const [sales, setSales] = useState<Sale[]>([]);
@@ -276,7 +275,7 @@ const SalesOrdersPage: React.FC = () => {
       key: 'customer',
       header: 'CLIENTE',
       render: (sale) => (
-        <div className="customer-cell">
+        <div className="flex items-center gap-3">
           <span>{sale.customer.name}</span>
         </div>
       )
@@ -290,7 +289,10 @@ const SalesOrdersPage: React.FC = () => {
       key: 'status',
       header: 'STATUS',
       render: (sale) => (
-        <span className={`status-badge ${sale.status.toLowerCase()}`}>
+        <span className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-full ${sale.status === 'PENDING' ? 'bg-warning-light text-warning' :
+          sale.status === 'CONFIRMED' ? 'bg-success-light text-success' :
+            'bg-danger-light text-danger'
+          }`}>
           {sale.status === 'PENDING' ? 'Pendente' : sale.status === 'CONFIRMED' ? 'Confirmado' : 'Cancelado'}
         </span>
       )
@@ -304,10 +306,10 @@ const SalesOrdersPage: React.FC = () => {
       key: 'actions',
       header: 'AÇÕES',
       render: (sale) => (
-        <div className="actions-cell">
+        <div className="flex gap-2 justify-end">
           {sale.status === 'CONFIRMED' || sale.status === 'CANCELLED' ? (
             <button
-              className="icon-btn"
+              className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary"
               title="Estornar Venda"
               onClick={(e) => handleReversalClick(sale, e)}
             >
@@ -316,14 +318,14 @@ const SalesOrdersPage: React.FC = () => {
           ) : (
             <>
               <button
-                className="icon-btn"
+                className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary"
                 title="Editar"
                 onClick={(e) => handleEdit(sale, e)}
               >
                 <Edit2 size={16} />
               </button>
               <button
-                className="icon-btn delete-btn"
+                className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-danger-light hover:text-danger"
                 title="Excluir"
                 onClick={(e) => handleDeleteClick(sale, e)}
               >
@@ -332,7 +334,7 @@ const SalesOrdersPage: React.FC = () => {
             </>
           )}
           <button
-            className="icon-btn"
+            className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary"
             title="Visualizar"
             onClick={(e) => handleView(sale, e)}
           >
@@ -345,24 +347,27 @@ const SalesOrdersPage: React.FC = () => {
   ];
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <div className="page-header-content">
-          <div className="breadcrumb">
-            <span>Comercial</span>
+    <div className="p-6 h-full flex flex-col overflow-hidden">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-border">
+        <div className="flex flex-col gap-1 w-full sm:w-auto">
+          <div className="flex items-center gap-2 text-sm text-text-secondary mb-1">
+            <span>Módulo</span>
             <span>/</span>
             <span>Vendas</span>
           </div>
-          <h1>Gestão de Pedidos de Venda</h1>
+          <h1 className="text-2xl font-semibold text-text-primary m-0">Pedidos de Venda</h1>
+          <p className="text-sm text-text-secondary mt-1">Gerencie pedidos, vendas e faturamento.</p>
         </div>
-        <div className="flex gap-2">
-          <button className="btn btn-secondary" onClick={handleExportPDF}>
-            <Download size={20} />
-            Exportar PDF
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button className="flex-1 sm:flex-none px-4 py-2 min-h-[44px] sm:min-h-[40px] bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors flex items-center justify-center gap-2" onClick={handleExportPDF}>
+            <Download size={18} />
+            <span className="hidden sm:inline">Exportar PDF</span>
+            <span className="sm:hidden">PDF</span>
           </button>
-          <button className="btn btn-primary" onClick={() => setIsCreateOpen(true)}>
-            <Plus size={20} />
-            Novo Pedido
+          <button className="flex-1 sm:flex-none px-4 py-2 min-h-[44px] sm:min-h-[40px] bg-primary text-white rounded-md hover:bg-primary-hover transition-colors flex items-center justify-center gap-2" onClick={() => setIsCreateOpen(true)}>
+            <Plus size={18} />
+            <span className="hidden sm:inline">Novo Pedido</span>
+            <span className="sm:hidden">Novo</span>
           </button>
         </div>
       </div>
@@ -427,7 +432,7 @@ const SalesOrdersPage: React.FC = () => {
         placeholder="Buscar por número ou cliente..."
       />
 
-      <div className="table-container">
+      <div className="flex-1 overflow-hidden rounded-lg border border-border bg-bg-primary">
         <DataTable
           data={sales}
           columns={columns}

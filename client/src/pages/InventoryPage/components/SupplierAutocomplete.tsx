@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supplierService } from '../../../services/supplierService';
 import type { Supplier } from '../../../types';
-import './SupplierAutocomplete.css';
 
 interface SupplierAutocompleteProps {
     value: number | '';
@@ -66,19 +65,19 @@ const SupplierAutocomplete: React.FC<SupplierAutocompleteProps> = ({ value, onCh
     }, [value, suppliers]);
 
     return (
-        <div className="supplier-autocomplete" ref={containerRef}>
+        <div className="relative w-full" ref={containerRef}>
             <input
                 type="text"
-                className="input"
+                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                 placeholder="Selecione fornecedor..."
                 value={query}
                 onChange={e => { setQuery(e.target.value); setShowList(true); }}
                 onFocus={() => setShowList(true)}
             />
             {showList && filtered.length > 0 && (
-                <ul className="suggestions-list">
+                <ul className="absolute top-full left-0 right-0 max-h-[200px] overflow-y-auto bg-bg-primary border border-border border-t-0 z-10 rounded-b-md shadow-lg">
                     {filtered.map(s => (
-                        <li key={s.id} onClick={() => handleSelect(s)} className="suggestion-item">
+                        <li key={s.id} onClick={() => handleSelect(s)} className="px-3 py-2 cursor-pointer hover:bg-bg-secondary text-sm text-text-primary transition-colors">
                             {s.name} {s.document && `(${s.document})`}
                         </li>
                     ))}

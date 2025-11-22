@@ -48,7 +48,7 @@ const FilterSelect: React.FC<FilterSelectProps> = ({ icon, value, options, onCha
     return (
         <div className="filter-select-container" ref={containerRef}>
             <button
-                className={`filter-select-trigger ${isOpen ? 'active' : ''}`}
+                className={`filter-select-trigger min-h-[44px] sm:min-h-[40px] ${isOpen ? 'active' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
             >
                 <div className="trigger-content">
@@ -63,7 +63,7 @@ const FilterSelect: React.FC<FilterSelectProps> = ({ icon, value, options, onCha
                     {options.map((opt) => (
                         <button
                             key={opt.value}
-                            className={`filter-select-option ${opt.value === value ? 'selected' : ''}`}
+                            className={`filter-select-option min-h-[44px] sm:min-h-[40px] ${opt.value === value ? 'selected' : ''}`}
                             onClick={() => handleSelect(opt.value)}
                         >
                             {opt.label}
@@ -125,18 +125,19 @@ const FilterBar: React.FC<FilterBarProps> = ({
     ];
 
     return (
-        <div className="filter-bar">
-            <div className="filter-search">
+        <div className="filter-bar flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
+            <div className="filter-search w-full sm:flex-1">
                 <Search size={18} />
                 <input
                     type="text"
                     placeholder={placeholder}
                     value={searchTerm}
                     onChange={handleSearch}
+                    className="min-h-[44px] sm:min-h-[40px]"
                 />
             </div>
 
-            <div className="filter-actions">
+            <div className="filter-actions flex-wrap gap-2 sm:gap-3">
                 {onStatusFilter && (
                     <FilterSelect
                         icon={<Filter size={16} />}
@@ -157,17 +158,17 @@ const FilterBar: React.FC<FilterBarProps> = ({
 
                 {/* Render date inputs if 'custom' is selected or if onDateRangeChange is provided without onDateFilter (optional usage) */}
                 {selectedDateRange === 'custom' && onDateFilter && (
-                    <div className="date-range-inputs">
+                    <div className="date-range-inputs w-full sm:w-auto flex-col sm:flex-row gap-2">
                         <input
                             type="date"
-                            className="filter-date-input"
+                            className="filter-date-input min-h-[44px] sm:min-h-[40px]"
                             onChange={(e) => onDateFilter(`custom_start:${e.target.value}`)}
                             placeholder="De"
                         />
-                        <span className="date-separator">até</span>
+                        <span className="date-separator hidden sm:inline">até</span>
                         <input
                             type="date"
-                            className="filter-date-input"
+                            className="filter-date-input min-h-[44px] sm:min-h-[40px]"
                             onChange={(e) => onDateFilter(`custom_end:${e.target.value}`)}
                             placeholder="Até"
                         />
@@ -175,7 +176,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
                 )}
 
                 {(searchTerm || selectedStatus !== 'all' || selectedDateRange !== 'all') && (
-                    <button className="clear-filters-btn" onClick={clearFilters}>
+                    <button className="clear-filters-btn min-h-[44px] sm:min-h-[40px]" onClick={clearFilters}>
                         <X size={16} />
                         Limpar
                     </button>

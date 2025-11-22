@@ -3,7 +3,6 @@ import type { Product, Category } from '../../../types';
 import { categoryService } from '../../../services/categoryService';
 import { Save, Upload, Package, DollarSign, FileText, Image as ImageIcon } from 'lucide-react';
 import SupplierAutocomplete from './SupplierAutocomplete';
-import './ProductForm.css';
 
 interface ProductFormProps {
     initialData: Product | null;
@@ -99,14 +98,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
     ];
 
     return (
-        <div className="product-form">
-            <div className="product-form-tabs">
+        <div className="flex flex-col h-full">
+            <div className="flex border-b border-border mb-6">
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
                         type="button"
                         onClick={() => setActiveTab(tab.id as any)}
-                        className={`product-form-tab ${activeTab === tab.id ? 'active' : ''}`}
+                        className={`flex items-center gap-2 px-6 py-3 text-sm font-medium bg-transparent border-b-2 cursor-pointer transition-colors hover:text-text-primary ${activeTab === tab.id ? 'text-primary border-primary' : 'border-transparent text-text-secondary'}`}
                     >
                         <tab.icon size={18} />
                         {tab.label}
@@ -114,40 +113,40 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                 ))}
             </div>
 
-            <form id="product-form" onSubmit={handleSubmit} className="product-form-content">
+            <form id="product-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-1">
                 {activeTab === 'general' && (
-                    <div className="product-form-section">
-                        <div className="product-status-toggle">
-                            <div className="status-label">ID: {initialData?.id || 'Novo'}</div>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="text-sm text-text-secondary">ID: {initialData?.id || 'Novo'}</div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <span className="status-label">Ativo</span>
+                                <span className="text-sm text-text-secondary">Ativo</span>
                                 <button
                                     type="button"
                                     onClick={() => handleChange('status', formData.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
-                                    className={`toggle-switch ${formData.status === 'ACTIVE' ? 'active' : 'inactive'}`}
+                                    className={`w-10 h-5 rounded-full relative cursor-pointer transition-colors border-none ${formData.status === 'ACTIVE' ? 'bg-primary' : 'bg-gray-300'}`}
                                 >
-                                    <div className="toggle-switch-thumb" />
+                                    <div className={`w-3 h-3 bg-white rounded-full absolute top-1 transition-all ${formData.status === 'ACTIVE' ? 'left-6' : 'left-1'}`} />
                                 </button>
                             </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>Nome do Produto *</label>
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-text-primary">Nome do Produto *</label>
                             <input
                                 type="text"
                                 required
-                                className="input"
+                                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                 value={formData.name}
                                 onChange={(e) => handleChange('name', e.target.value)}
                             />
                         </div>
 
-                        <div className="form-grid-2">
-                            <div className="form-group">
-                                <label>Categoria *</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Categoria *</label>
                                 <select
                                     required
-                                    className="select"
+                                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                     value={formData.categoryId || ''}
                                     onChange={(e) => handleChange('categoryId', e.target.value ? Number(e.target.value) : undefined)}
                                 >
@@ -157,29 +156,29 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                                     ))}
                                 </select>
                             </div>
-                            <div className="form-group">
-                                <label>Código de Barras (EAN)</label>
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Código de Barras (EAN)</label>
                                 <input
                                     type="text"
-                                    className="input"
+                                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                     value={formData.barcode || ''}
                                     onChange={(e) => handleChange('barcode', e.target.value)}
                                 />
                             </div>
                         </div>
 
-                        <div className="form-grid-2">
-                            <div className="form-group">
-                                <label>Fornecedor Principal</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Fornecedor Principal</label>
                                 <SupplierAutocomplete
                                     value={formData.supplierId || ''}
                                     onChange={(val) => handleChange('supplierId', val === '' ? undefined : val)}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Unidade</label>
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Unidade</label>
                                 <select
-                                    className="select"
+                                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                     value={formData.unit || 'UN'}
                                     onChange={(e) => handleChange('unit', e.target.value)}
                                 >
@@ -191,10 +190,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                             </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>Descrição</label>
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-text-primary">Descrição</label>
                             <textarea
-                                className="input"
+                                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                 rows={3}
                                 value={formData.description || ''}
                                 onChange={(e) => handleChange('description', e.target.value)}
@@ -204,43 +203,43 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                 )}
 
                 {activeTab === 'prices' && (
-                    <div className="product-form-section">
-                        <h3 className="section-title">
+                    <div className="flex flex-col gap-4">
+                        <h3 className="text-lg font-medium text-text-primary flex items-center gap-2 mb-4">
                             <DollarSign size={20} /> Precificação
                         </h3>
-                        <div className="form-grid-3">
-                            <div className="form-group">
-                                <label>Preço de Custo</label>
-                                <div className="input-with-prefix">
-                                    <span className="input-prefix">R$</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Preço de Custo</label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none">R$</span>
                                     <input
                                         type="number"
                                         step="0.01"
-                                        className="input"
+                                        className="w-full pl-8 pr-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                         value={formData.cost}
                                         onChange={(e) => handlePriceChange('cost', parseFloat(e.target.value))}
                                     />
                                 </div>
                             </div>
-                            <div className="form-group">
-                                <label>Margem (%)</label>
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Margem (%)</label>
                                 <input
                                     type="number"
                                     step="0.1"
-                                    className="input"
+                                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                     value={margin}
                                     onChange={(e) => handlePriceChange('margin', parseFloat(e.target.value))}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Preço de Venda *</label>
-                                <div className="input-with-prefix">
-                                    <span className="input-prefix">R$</span>
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Preço de Venda *</label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none">R$</span>
                                     <input
                                         type="number"
                                         step="0.01"
                                         required
-                                        className="input"
+                                        className="w-full pl-8 pr-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                         value={formData.price}
                                         onChange={(e) => handlePriceChange('price', parseFloat(e.target.value))}
                                     />
@@ -248,25 +247,25 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                             </div>
                         </div>
 
-                        <div className="section-divider">
-                            <h3 className="section-title">
+                        <div className="border-t border-border pt-6 mt-6">
+                            <h3 className="text-lg font-medium text-text-primary flex items-center gap-2 mb-4">
                                 <Package size={20} /> Estoque
                             </h3>
-                            <div className="form-grid-2">
-                                <div className="form-group">
-                                    <label>Estoque Atual</label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-sm font-medium text-text-primary">Estoque Atual</label>
                                     <input
                                         type="number"
-                                        className="input"
+                                        className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                         value={formData.stock}
                                         onChange={(e) => handleChange('stock', parseInt(e.target.value))}
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label>Estoque Mínimo</label>
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-sm font-medium text-text-primary">Estoque Mínimo</label>
                                     <input
                                         type="number"
-                                        className="input"
+                                        className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                         value={formData.minStock}
                                         onChange={(e) => handleChange('minStock', parseInt(e.target.value))}
                                     />
@@ -277,54 +276,54 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                 )}
 
                 {activeTab === 'details' && (
-                    <div className="product-form-section">
-                        <div className="form-grid-4">
-                            <div className="form-group">
-                                <label>Largura (cm)</label>
+                    <div className="flex flex-col gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Largura (cm)</label>
                                 <input
                                     type="number"
                                     step="0.01"
-                                    className="input"
+                                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                     value={formData.width || 0}
                                     onChange={(e) => handleChange('width', parseFloat(e.target.value))}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Altura (cm)</label>
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Altura (cm)</label>
                                 <input
                                     type="number"
                                     step="0.01"
-                                    className="input"
+                                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                     value={formData.height || 0}
                                     onChange={(e) => handleChange('height', parseFloat(e.target.value))}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Comprimento (cm)</label>
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Comprimento (cm)</label>
                                 <input
                                     type="number"
                                     step="0.01"
-                                    className="input"
+                                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                     value={formData.length || 0}
                                     onChange={(e) => handleChange('length', parseFloat(e.target.value))}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Peso Bruto (kg)</label>
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-sm font-medium text-text-primary">Peso Bruto (kg)</label>
                                 <input
                                     type="number"
                                     step="0.001"
-                                    className="input"
+                                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                     value={formData.weight || 0}
                                     onChange={(e) => handleChange('weight', parseFloat(e.target.value))}
                                 />
                             </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>Observações Internas</label>
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-text-primary">Observações Internas</label>
                             <textarea
-                                className="input"
+                                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                 rows={4}
                                 placeholder="Informações visíveis apenas para a equipe..."
                             />
@@ -333,12 +332,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                 )}
 
                 {activeTab === 'images' && (
-                    <div className="product-form-section">
-                        <div className="form-group">
-                            <label>URL da Imagem Principal</label>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-text-primary">URL da Imagem Principal</label>
                             <input
                                 type="text"
-                                className="input"
+                                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg-primary text-text-primary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                 value={formData.imageUrl || ''}
                                 onChange={(e) => handleChange('imageUrl', e.target.value)}
                                 placeholder="https://..."
@@ -346,29 +345,30 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                         </div>
 
                         {formData.imageUrl && (
-                            <div className="image-preview">
+                            <div className="mt-4 flex justify-center">
                                 <img
                                     src={formData.imageUrl}
                                     alt="Preview"
+                                    className="max-h-64 rounded-lg border border-border"
                                     onError={(e) => (e.currentTarget.style.display = 'none')}
                                 />
                             </div>
                         )}
 
-                        <div className="upload-area">
-                            <Upload size={32} />
-                            <p>Arraste e solte imagens aqui ou clique para selecionar</p>
-                            <p className="upload-note">(Upload de arquivos não implementado nesta demo)</p>
+                        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center text-text-secondary hover:bg-bg-secondary transition-colors cursor-pointer">
+                            <Upload size={32} className="mx-auto mb-2" />
+                            <p className="my-1">Arraste e solte imagens aqui ou clique para selecionar</p>
+                            <p className="text-xs mt-1">(Upload de arquivos não implementado nesta demo)</p>
                         </div>
                     </div>
                 )}
             </form>
 
-            <div className="form-footer">
+            <div className="flex justify-end gap-3 pt-6 border-t border-border mt-auto">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="btn btn-secondary"
+                    className="px-4 py-2 bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors"
                 >
                     Cancelar
                 </button>
@@ -376,7 +376,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, onCanc
                     type="submit"
                     form="product-form"
                     disabled={loading}
-                    className="btn btn-primary"
+                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors flex items-center gap-2"
                 >
                     <Save size={18} />
                     {loading ? 'Salvando...' : 'Salvar Produto'}

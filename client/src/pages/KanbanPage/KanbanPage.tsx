@@ -4,7 +4,6 @@ import { boardService } from '../../services/boardService';
 import { cardService } from '../../services/cardService';
 import { userService } from '../../services/userService';
 import { KanbanColumn } from './KanbanColumn';
-import './KanbanPage.css';
 
 const BOARD_COLORS = [
     '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
@@ -223,9 +222,9 @@ export const KanbanPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="kanban-page">
-                <div style={{ textAlign: 'center', color: 'white', padding: '4rem' }}>
-                    <h2>Carregando...</h2>
+            <div className="p-6 h-full bg-bg-secondary flex flex-col overflow-hidden items-center justify-center">
+                <div className="text-center text-text-secondary">
+                    <h2 className="text-xl font-semibold">Carregando...</h2>
                 </div>
             </div>
         );
@@ -233,54 +232,54 @@ export const KanbanPage: React.FC = () => {
 
     if (!selectedBoard) {
         return (
-            <div className="kanban-page">
-                <div className="kanban-header">
-                    <h1 className="kanban-title">Quadros Kanban</h1>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
-                        <button className="btn btn-secondary" onClick={() => setShowInvitationsModal(true)}>
+            <div className="p-6 h-full bg-bg-secondary flex flex-col overflow-hidden">
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                    <h1 className="text-2xl font-semibold text-text-primary m-0">Quadros Kanban</h1>
+                    <div className="flex gap-3">
+                        <button className="px-4 py-2 bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors flex items-center gap-2" onClick={() => setShowInvitationsModal(true)}>
                             📩 Convites
                         </button>
-                        <button className="btn btn-primary" onClick={handleCreateBoard}>
+                        <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors flex items-center gap-2" onClick={handleCreateBoard}>
                             + Novo Quadro
                         </button>
                     </div>
                 </div>
 
                 {boards.length === 0 ? (
-                    <div className="empty-state">
-                        <div className="empty-state-icon">📋</div>
-                        <h3>Nenhum quadro criado</h3>
-                        <p>Crie seu primeiro quadro para começar a organizar suas tarefas</p>
-                        <button className="btn btn-primary" onClick={handleCreateBoard}>
+                    <div className="text-center py-16 px-8 bg-bg-primary border border-dashed border-border rounded-lg mt-8">
+                        <div className="text-5xl mb-4 text-text-tertiary">📋</div>
+                        <h3 className="text-lg font-semibold text-text-primary mb-2">Nenhum quadro criado</h3>
+                        <p className="text-text-secondary mb-6">Crie seu primeiro quadro para começar a organizar suas tarefas</p>
+                        <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors" onClick={handleCreateBoard}>
                             Criar Primeiro Quadro
                         </button>
                     </div>
                 ) : (
-                    <div className="boards-grid">
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6 pb-8 overflow-y-auto">
                         {boards.map((board) => (
                             <div
                                 key={board.id}
-                                className="board-card"
+                                className="bg-bg-primary border border-border rounded-lg p-6 cursor-pointer transition-all duration-200 shadow-sm flex flex-col h-full hover:-translate-y-0.5 hover:shadow-md hover:border-primary group"
                                 onClick={() => loadBoard(board.id)}
                             >
-                                <div className="board-card-header">
-                                    <div className="board-title-wrapper">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="flex items-center gap-3">
                                         <div
-                                            className="board-color-indicator"
+                                            className="w-3 h-3 rounded shrink-0"
                                             style={{ background: board.color }}
                                         />
-                                        <h3 className="board-card-title">{board.title}</h3>
+                                        <h3 className="text-lg font-semibold text-text-primary m-0">{board.title}</h3>
                                     </div>
-                                    <div className="board-card-actions" onClick={(e) => e.stopPropagation()}>
+                                    <div className="flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
                                         <button
-                                            className="btn-icon"
+                                            className="p-1 bg-transparent border-none cursor-pointer rounded text-text-tertiary transition-all hover:bg-bg-secondary hover:text-text-primary"
                                             onClick={() => handleEditBoard(board)}
                                             title="Editar"
                                         >
                                             ✏️
                                         </button>
                                         <button
-                                            className="btn-icon"
+                                            className="p-1 bg-transparent border-none cursor-pointer rounded text-text-tertiary transition-all hover:bg-bg-secondary hover:text-danger"
                                             onClick={() => handleDeleteBoard(board.id)}
                                             title="Excluir"
                                         >
@@ -290,26 +289,20 @@ export const KanbanPage: React.FC = () => {
                                 </div>
 
                                 {board.description && (
-                                    <p className="board-card-description">
+                                    <p className="text-text-secondary text-sm mb-auto leading-relaxed line-clamp-3 overflow-hidden">
                                         {board.description}
                                     </p>
                                 )}
 
-                                <div className="board-card-stats">
-                                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: 1 }}>
+                                <div className="mt-6 pt-4 border-t border-border flex gap-4 text-sm text-text-tertiary items-center">
+                                    <div className="flex gap-2 items-center flex-1">
                                         <span>📊 {board.columns.length} colunas</span>
                                         <span>📝 {board.columns.reduce((sum, col) => sum + col.cards.length, 0)} cards</span>
                                     </div>
-                                    <span style={{
-                                        fontSize: '0.75rem',
-                                        padding: '0.25rem 0.5rem',
-                                        background: board.owner.id === JSON.parse(localStorage.getItem('user') || '{}').id
-                                            ? 'var(--primary-color)'
-                                            : 'var(--accent-color)',
-                                        color: 'white',
-                                        borderRadius: '4px',
-                                        fontWeight: 500
-                                    }}>
+                                    <span className={`text-xs px-2 py-1 rounded font-medium text-white ${board.owner.id === JSON.parse(localStorage.getItem('user') || '{}').id
+                                            ? 'bg-primary'
+                                            : 'bg-secondary'
+                                        }`}>
                                         {board.owner.id === JSON.parse(localStorage.getItem('user') || '{}').id ? '👑 Dono' : '👤 Membro'}
                                     </span>
                                 </div>
@@ -340,29 +333,29 @@ export const KanbanPage: React.FC = () => {
     }
 
     return (
-        <div className="kanban-page">
-            <div className="kanban-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="p-6 h-full bg-bg-secondary flex flex-col overflow-hidden">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                <div className="flex items-center gap-4">
                     <button
-                        className="btn btn-secondary btn-sm"
+                        className="px-3 py-1.5 text-xs bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors"
                         onClick={() => setSelectedBoard(null)}
                     >
                         ← Voltar
                     </button>
-                    <h2 className="kanban-title">{selectedBoard.title}</h2>
+                    <h2 className="text-2xl font-semibold text-text-primary m-0">{selectedBoard.title}</h2>
                 </div>
-                <div className="kanban-actions">
-                    <button className="btn btn-secondary btn-sm" onClick={() => setShowMembersModal(true)}>
+                <div className="flex gap-3">
+                    <button className="px-3 py-1.5 text-xs bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors" onClick={() => setShowMembersModal(true)}>
                         👥 Membros
                     </button>
-                    <button className="btn btn-secondary btn-sm" onClick={handleCreateColumn}>
+                    <button className="px-3 py-1.5 text-xs bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors" onClick={handleCreateColumn}>
                         + Nova Coluna
                     </button>
                 </div>
             </div>
 
-            <div className="kanban-board">
-                <div className="columns-container">
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="flex gap-6 overflow-x-auto overflow-y-hidden h-full pb-4 items-start scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                     {selectedBoard.columns.map((column) => (
                         <KanbanColumn
                             key={column.id}
@@ -434,21 +427,21 @@ const BoardModal: React.FC<BoardModalProps> = ({ board, onSave, onClose }) => {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2 className="modal-title">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-bg-primary rounded-lg p-6 max-w-[500px] w-[90%] max-h-[90vh] overflow-y-auto shadow-lg animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                    <h2 className="text-xl font-semibold text-text-primary m-0">
                         {board ? 'Editar Quadro' : 'Novo Quadro'}
                     </h2>
-                    <button className="modal-close" onClick={onClose}>×</button>
+                    <button className="bg-none border-none text-2xl text-text-tertiary cursor-pointer p-1 leading-none transition-colors hover:text-text-primary" onClick={onClose}>×</button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label className="form-label">Título</label>
+                    <div className="mb-5">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Título</label>
                         <input
                             type="text"
-                            className="input"
+                            className="w-full p-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             required
@@ -457,25 +450,24 @@ const BoardModal: React.FC<BoardModalProps> = ({ board, onSave, onClose }) => {
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Descrição</label>
+                    <div className="mb-5">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Descrição</label>
                         <textarea
-                            className="input"
+                            className="w-full p-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light min-h-[80px] resize-y"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
-                            style={{ resize: 'vertical', minHeight: '80px' }}
                             placeholder="Breve descrição do projeto..."
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Cor de Identificação</label>
-                        <div className="color-picker-grid">
+                    <div className="mb-5">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Cor de Identificação</label>
+                        <div className="grid grid-cols-8 gap-2">
                             {BOARD_COLORS.map((c) => (
                                 <div
                                     key={c}
-                                    className={`color-option ${color === c ? 'selected' : ''}`}
+                                    className={`w-8 h-8 rounded-md cursor-pointer transition-all border-2 hover:scale-110 ${color === c ? 'border-text-primary ring-2 ring-bg-primary' : 'border-transparent'}`}
                                     style={{ background: c }}
                                     onClick={() => setColor(c)}
                                 />
@@ -483,11 +475,11 @@ const BoardModal: React.FC<BoardModalProps> = ({ board, onSave, onClose }) => {
                         </div>
                     </div>
 
-                    <div className="modal-actions">
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>
+                    <div className="flex gap-3 justify-end mt-8 pt-4 border-t border-border">
+                        <button type="button" className="px-4 py-2 bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors" onClick={onClose}>
                             Cancelar
                         </button>
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors">
                             {board ? 'Salvar Alterações' : 'Criar Quadro'}
                         </button>
                     </div>
@@ -514,21 +506,21 @@ const ColumnModal: React.FC<ColumnModalProps> = ({ column, onSave, onClose }) =>
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2 className="modal-title">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-bg-primary rounded-lg p-6 max-w-[500px] w-[90%] max-h-[90vh] overflow-y-auto shadow-lg animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                    <h2 className="text-xl font-semibold text-text-primary m-0">
                         {column ? 'Editar Coluna' : 'Nova Coluna'}
                     </h2>
-                    <button className="modal-close" onClick={onClose}>×</button>
+                    <button className="bg-none border-none text-2xl text-text-tertiary cursor-pointer p-1 leading-none transition-colors hover:text-text-primary" onClick={onClose}>×</button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label className="form-label">Título</label>
+                    <div className="mb-5">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Título</label>
                         <input
                             type="text"
-                            className="input"
+                            className="w-full p-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             required
@@ -537,13 +529,13 @@ const ColumnModal: React.FC<ColumnModalProps> = ({ column, onSave, onClose }) =>
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Cor da Coluna</label>
-                        <div className="color-picker-grid">
+                    <div className="mb-5">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Cor da Coluna</label>
+                        <div className="grid grid-cols-8 gap-2">
                             {COLUMN_COLORS.map((c) => (
                                 <div
                                     key={c}
-                                    className={`color-option ${color === c ? 'selected' : ''}`}
+                                    className={`w-8 h-8 rounded-md cursor-pointer transition-all border-2 hover:scale-110 ${color === c ? 'border-text-primary ring-2 ring-bg-primary' : 'border-transparent'}`}
                                     style={{ background: c }}
                                     onClick={() => setColor(c)}
                                 />
@@ -551,11 +543,11 @@ const ColumnModal: React.FC<ColumnModalProps> = ({ column, onSave, onClose }) =>
                         </div>
                     </div>
 
-                    <div className="modal-actions">
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>
+                    <div className="flex gap-3 justify-end mt-8 pt-4 border-t border-border">
+                        <button type="button" className="px-4 py-2 bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors" onClick={onClose}>
                             Cancelar
                         </button>
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors">
                             {column ? 'Salvar' : 'Criar'}
                         </button>
                     </div>
@@ -594,21 +586,21 @@ const CardModal: React.FC<CardModalProps> = ({ card, columnId, onSave, onDelete,
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2 className="modal-title">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-bg-primary rounded-lg p-6 max-w-[500px] w-[90%] max-h-[90vh] overflow-y-auto shadow-lg animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                    <h2 className="text-xl font-semibold text-text-primary m-0">
                         {card ? 'Editar Card' : 'Novo Card'}
                     </h2>
-                    <button className="modal-close" onClick={onClose}>×</button>
+                    <button className="bg-none border-none text-2xl text-text-tertiary cursor-pointer p-1 leading-none transition-colors hover:text-text-primary" onClick={onClose}>×</button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label className="form-label">Título</label>
+                    <div className="mb-5">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Título</label>
                         <input
                             type="text"
-                            className="input"
+                            className="w-full p-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             required
@@ -617,23 +609,22 @@ const CardModal: React.FC<CardModalProps> = ({ card, columnId, onSave, onDelete,
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Descrição</label>
+                    <div className="mb-5">
+                        <label className="block text-sm font-medium text-text-primary mb-2">Descrição</label>
                         <textarea
-                            className="input"
+                            className="w-full p-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light min-h-[100px] resize-y"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={4}
-                            style={{ resize: 'vertical', minHeight: '100px' }}
                             placeholder="Detalhes adicionais..."
                         />
                     </div>
 
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label className="form-label">Prioridade</label>
+                    <div className="grid grid-cols-2 gap-4 mb-5">
+                        <div>
+                            <label className="block text-sm font-medium text-text-primary mb-2">Prioridade</label>
                             <select
-                                className="select"
+                                className="w-full p-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                 value={priority}
                                 onChange={(e) => setPriority(e.target.value as CardPriority)}
                             >
@@ -644,32 +635,31 @@ const CardModal: React.FC<CardModalProps> = ({ card, columnId, onSave, onDelete,
                             </select>
                         </div>
 
-                        <div className="form-group">
-                            <label className="form-label">Data de Vencimento</label>
+                        <div>
+                            <label className="block text-sm font-medium text-text-primary mb-2">Data de Vencimento</label>
                             <input
                                 type="date"
-                                className="input"
+                                className="w-full p-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                 value={dueDate}
                                 onChange={(e) => setDueDate(e.target.value)}
                             />
                         </div>
                     </div>
 
-                    <div className="modal-actions">
+                    <div className="flex gap-3 justify-end mt-8 pt-4 border-t border-border">
                         {onDelete && (
                             <button
                                 type="button"
-                                className="btn btn-danger"
+                                className="px-4 py-2 bg-danger text-white rounded-md hover:bg-red-600 transition-colors mr-auto"
                                 onClick={onDelete}
-                                style={{ marginRight: 'auto' }}
                             >
                                 Excluir
                             </button>
                         )}
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>
+                        <button type="button" className="px-4 py-2 bg-bg-tertiary text-text-primary rounded-md hover:bg-border-hover transition-colors" onClick={onClose}>
                             Cancelar
                         </button>
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors">
                             {card ? 'Salvar' : 'Criar'}
                         </button>
                     </div>
@@ -712,48 +702,41 @@ const InvitationsModal: React.FC<{ onClose: () => void; onUpdate: () => void }> 
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2 className="modal-title">Convites Pendentes</h2>
-                    <button className="modal-close" onClick={onClose}>×</button>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-bg-primary rounded-lg p-6 max-w-[500px] w-[90%] max-h-[90vh] overflow-y-auto shadow-lg animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                    <h2 className="text-xl font-semibold text-text-primary m-0">Convites Pendentes</h2>
+                    <button className="bg-none border-none text-2xl text-text-tertiary cursor-pointer p-1 leading-none transition-colors hover:text-text-primary" onClick={onClose}>×</button>
                 </div>
 
-                <div style={{ padding: '1.5rem' }}>
+                <div>
                     {loading ? (
-                        <p>Carregando...</p>
+                        <p className="text-text-secondary">Carregando...</p>
                     ) : invitations.length === 0 ? (
-                        <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        <p className="text-text-secondary text-center py-4">
                             Nenhum convite pendente.
                         </p>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div className="flex flex-col gap-3">
                             {invitations.map((invitation) => (
-                                <div key={invitation.id} style={{
-                                    padding: '1rem',
-                                    background: 'var(--bg-secondary)',
-                                    borderRadius: '8px',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center'
-                                }}>
+                                <div key={invitation.id} className="flex justify-between items-center p-4 bg-bg-secondary rounded-lg">
                                     <div>
-                                        <h3 style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                                        <h3 className="font-semibold text-text-primary mb-1">
                                             {invitation.board.title}
                                         </h3>
-                                        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                        <p className="text-sm text-text-secondary">
                                             Convidado por: {invitation.board.owner.name}
                                         </p>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <div className="flex gap-2">
                                         <button
-                                            className="btn btn-success btn-sm"
+                                            className="px-3 py-1.5 text-xs bg-success text-white rounded-md hover:bg-green-600 transition-colors"
                                             onClick={() => handleRespond(invitation.id, 'ACCEPTED')}
                                         >
                                             Aceitar
                                         </button>
                                         <button
-                                            className="btn btn-danger btn-sm"
+                                            className="px-3 py-1.5 text-xs bg-danger text-white rounded-md hover:bg-red-600 transition-colors"
                                             onClick={() => handleRespond(invitation.id, 'REJECTED')}
                                         >
                                             Recusar
@@ -829,23 +812,23 @@ const MembersModal: React.FC<MembersModalProps> = ({ board, onClose, onUpdate })
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2 className="modal-title">Gerenciar Membros</h2>
-                    <button className="modal-close" onClick={onClose}>×</button>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-bg-primary rounded-lg p-6 max-w-[500px] w-[90%] max-h-[90vh] overflow-y-auto shadow-lg animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                    <h2 className="text-xl font-semibold text-text-primary m-0">Gerenciar Membros</h2>
+                    <button className="bg-none border-none text-2xl text-text-tertiary cursor-pointer p-1 leading-none transition-colors hover:text-text-primary" onClick={onClose}>×</button>
                 </div>
 
-                <div style={{ padding: '1.5rem' }}>
+                <div>
                     {/* Invite Section */}
-                    <div style={{ marginBottom: '2rem' }}>
-                        <h3 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
+                    <div className="mb-8">
+                        <h3 className="text-sm font-semibold text-text-primary mb-3">
                             Convidar Novo Membro
                         </h3>
-                        <div className="form-group">
+                        <div className="mb-2">
                             <input
                                 type="text"
-                                className="input"
+                                className="w-full p-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Buscar usuário por nome ou email..."
@@ -854,29 +837,15 @@ const MembersModal: React.FC<MembersModalProps> = ({ board, onClose, onUpdate })
                         </div>
 
                         {searchResults.length > 0 && (
-                            <div style={{
-                                marginTop: '0.5rem',
-                                background: 'var(--bg-secondary)',
-                                borderRadius: '8px',
-                                maxHeight: '200px',
-                                overflowY: 'auto'
-                            }}>
+                            <div className="mt-2 bg-bg-secondary rounded-lg max-h-[200px] overflow-y-auto border border-border">
                                 {searchResults.map(user => (
-                                    <div key={user.id} style={{
-                                        padding: '0.75rem',
-                                        borderBottom: '1px solid var(--border-color)',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        cursor: loading ? 'not-allowed' : 'pointer',
-                                        opacity: loading ? 0.7 : 1
-                                    }} onClick={() => !loading && handleInvite(user.id)}>
+                                    <div key={user.id} className={`p-3 border-b border-border flex justify-between items-center last:border-none ${loading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-bg-tertiary'}`} onClick={() => !loading && handleInvite(user.id)}>
                                         <div>
-                                            <div style={{ fontWeight: 500 }}>{user.name}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{user.email}</div>
+                                            <div className="font-medium text-text-primary">{user.name}</div>
+                                            <div className="text-xs text-text-secondary">{user.email}</div>
                                         </div>
                                         <button
-                                            className="btn btn-primary btn-sm"
+                                            className="px-3 py-1.5 text-xs bg-primary text-white rounded-md hover:bg-primary-hover transition-colors disabled:opacity-50"
                                             disabled={loading}
                                         >
                                             {loading ? '...' : 'Convidar'}
@@ -885,102 +854,61 @@ const MembersModal: React.FC<MembersModalProps> = ({ board, onClose, onUpdate })
                                 ))}
                             </div>
                         )}
-                        {error && <p className="error-message" style={{ marginTop: '0.5rem' }}>{error}</p>}
+                        {error && <p className="text-danger text-sm mt-2">{error}</p>}
                     </div>
 
                     {/* Owner Section */}
-                    <div style={{ marginBottom: '1.5rem' }}>
-                        <h3 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
+                    <div className="mb-6">
+                        <h3 className="text-sm font-semibold text-text-primary mb-3">
                             Proprietário
                         </h3>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.75rem',
-                            padding: '0.75rem',
-                            background: 'var(--bg-secondary)',
-                            borderRadius: '8px'
-                        }}>
-                            <div style={{
-                                width: '32px',
-                                height: '32px',
-                                borderRadius: '50%',
-                                background: 'var(--primary-color)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white',
-                                fontWeight: 600
-                            }}>
+                        <div className="flex items-center gap-3 p-3 bg-bg-secondary rounded-lg">
+                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-semibold">
                                 {board.owner.name.charAt(0).toUpperCase()}
                             </div>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
+                            <div className="flex-1">
+                                <div className="font-medium text-text-primary">
                                     {board.owner.name}
                                 </div>
-                                <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                <div className="text-sm text-text-secondary">
                                     {board.owner.email}
                                 </div>
                             </div>
-                            <span style={{
-                                fontSize: '0.75rem',
-                                padding: '0.25rem 0.5rem',
-                                background: 'var(--primary-color)',
-                                color: 'white',
-                                borderRadius: '4px'
-                            }}>
+                            <span className="text-xs px-2 py-1 bg-primary text-white rounded">
                                 Dono
                             </span>
                         </div>
                     </div>
 
                     {/* Members Section */}
-                    <div style={{ marginBottom: '1.5rem' }}>
-                        <h3 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
+                    <div className="mb-6">
+                        <h3 className="text-sm font-semibold text-text-primary mb-3">
                             Membros ({board.members.length})
                         </h3>
                         {board.members.length === 0 ? (
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', padding: '1rem', textAlign: 'center' }}>
+                            <p className="text-text-secondary text-sm p-4 text-center bg-bg-secondary rounded-lg">
                                 Nenhum membro adicionado ainda
                             </p>
                         ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div className="flex flex-col gap-2">
                                 {board.members.map((member) => (
-                                    <div key={member.id} style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.75rem',
-                                        padding: '0.75rem',
-                                        background: 'var(--bg-secondary)',
-                                        borderRadius: '8px'
-                                    }}>
-                                        <div style={{
-                                            width: '32px',
-                                            height: '32px',
-                                            borderRadius: '50%',
-                                            background: 'var(--accent-color)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: 'white',
-                                            fontWeight: 600
-                                        }}>
+                                    <div key={member.id} className="flex items-center gap-3 p-3 bg-bg-secondary rounded-lg">
+                                        <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white font-semibold">
                                             {member.name.charAt(0).toUpperCase()}
                                         </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
+                                        <div className="flex-1">
+                                            <div className="font-medium text-text-primary">
                                                 {member.name}
                                             </div>
-                                            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                            <div className="text-sm text-text-secondary">
                                                 {member.email}
                                             </div>
                                         </div>
                                         {board.owner.id === JSON.parse(localStorage.getItem('user') || '{}').id && (
                                             <button
-                                                className="btn-icon"
+                                                className="p-1 bg-transparent border-none cursor-pointer rounded text-danger transition-all hover:bg-danger/10"
                                                 onClick={() => handleRemove(member.id)}
                                                 title="Remover"
-                                                style={{ color: 'var(--danger-color)' }}
                                             >
                                                 🗑️
                                             </button>

@@ -17,17 +17,16 @@ import {
     BarChart3,
     ClipboardList,
     Shield,
-    Trello
+    Trello,
+    X
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLayout } from '../../contexts/LayoutContext';
-import './Sidebar.css';
-
 import { companyService } from '../../services/companyService';
 
 const Sidebar: React.FC = () => {
     const { logout } = useAuth();
-    const { sidebarOpen } = useLayout();
+    const { sidebarOpen, toggleSidebar, closeSidebar } = useLayout();
     const location = useLocation();
     const navigate = useNavigate();
     const [companyName, setCompanyName] = useState('Nexus ERP');
@@ -71,6 +70,15 @@ const Sidebar: React.FC = () => {
         else if (path.includes('/estoque')) setSelectedModuleIndex(2);
         else if (path.includes('/comercial')) setSelectedModuleIndex(3);
     }, [location.pathname]);
+
+    // Fechar sidebar ao navegar em mobile
+    useEffect(() => {
+        // Adiciona listener apenas para fechar ao navegar se for mobile
+        if (window.innerWidth < 768) {
+            closeSidebar();
+        }
+    }, [location.pathname]);
+
 
     type SubItem = {
         name: string;
@@ -137,112 +145,170 @@ const Sidebar: React.FC = () => {
     };
 
     return (
-        <aside className={`sidebar ${!sidebarOpen ? 'collapsed' : ''}`}>
-            <div className="sidebar-header">
-                <div className="sidebar-logo">
-                    <div className="logo-icon">
-                        <LayoutDashboard size={24} />
-                    </div>
-                    {sidebarOpen && (
-                        <div className="logo-text">
-                            <h1>{companyName}</h1>
+        <>
+            {/* Mobile Overlay */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+                    onClick={closeSidebar}
+                />
+            )}
+
+            <aside
+                className={`
+                    fixed inset-y-0 left-0 z-50 bg-bg-secondary border-r border-border
+                    flex flex-col transition-all duration-300 ease-in-out
+                    ${sidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full md:translate-x-0 md:w-20'}
+                `}
+            >
+                <div className="h-16 flex items-center justify-between px-6 border-b border-border">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="min-w-[40px] h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                            <LayoutDashboard size={24} />
                         </div>
-                    )}
-                </div>
-            </div>
-
-            <nav className="sidebar-nav">
-                <div className="sidebar-section">
-                    <NavLink
-                        to="/"
-                        className={({ isActive }) => `sidebar-link main-dashboard ${isActive && location.pathname === '/' ? 'active' : ''}`}
-                        end
-                    >
-                        <LayoutDashboard size={20} />
-                        {sidebarOpen && <span>Painel Principal</span>}
-                    </NavLink>
-
-                    <NavLink
-                        to="/kanban"
-                        className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                        title={!sidebarOpen ? 'Kanban' : ''}
-                    >
-                        <Trello size={20} />
-                        {sidebarOpen && <span>Kanban</span>}
-                    </NavLink>
-                </div>
-
-                {sidebarOpen && (
-                    <div className="module-selector-container" ref={dropdownRef}>
-                        <label className="module-label">MÓDULO</label>
-                        <div
-                            className={`module-dropdown-trigger ${isDropdownOpen ? 'active' : ''}`}
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        >
-                            <div className="module-info">
-                                <currentModule.icon size={18} />
-                                <span>{currentModule.name}</span>
-                            </div>
-                            <ChevronDown size={16} className={`dropdown-arrow ${isDropdownOpen ? 'rotated' : ''}`} />
+                        <div className={`transition-opacity duration-200 ${sidebarOpen ? 'opacity-100' : 'opacity-0 md:hidden'} whitespace-nowrap`}>
+                            <h1 className="text-lg font-bold text-text-primary">{companyName}</h1>
                         </div>
-
-                        {isDropdownOpen && (
-                            <div className="module-dropdown-menu">
-                                {modules.map((module, index) => (
-                                    <div
-                                        key={module.name}
-                                        className={`module-option ${index === selectedModuleIndex ? 'selected' : ''}`}
-                                        onClick={() => handleModuleSelect(index)}
-                                    >
-                                        <module.icon size={16} />
-                                        <span>{module.name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div>
-                )}
-
-                {/* Se sidebar estiver fechada, mostra ícones dos módulos como atalhos rápidos ou tooltip */}
-                {!sidebarOpen && (
-                    <div className="collapsed-modules-divider"></div>
-                )}
-
-                <div className="sidebar-content">
-                    {sidebarOpen && (
-                        <h3 className="module-section-title">{currentModule.name.toUpperCase()}</h3>
-                    )}
-
-                    <div className="module-links">
-                        {currentModule.subItems.map((item) => (
-                            <NavLink
-                                key={item.path}
-                                to={item.path}
-                                className={({ isActive }) =>
-                                    `sidebar-link ${isActive ? 'active' : ''}`
-                                }
-                                title={!sidebarOpen ? item.name : ''}
-                            >
-                                {item.icon && <item.icon size={20} />}
-                                {sidebarOpen && <span>{item.name}</span>}
-                            </NavLink>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="sidebar-footer">
-                    <NavLink to="/ajuda" className="sidebar-link" title={!sidebarOpen ? 'Ajuda' : ''}>
-                        <HelpCircle size={20} />
-                        {sidebarOpen && <span>Ajuda</span>}
-                    </NavLink>
-
-                    <button className="sidebar-link logout-btn" onClick={logout} title={!sidebarOpen ? 'Sair' : ''}>
-                        <LogOut size={20} />
-                        {sidebarOpen && <span>Sair</span>}
+                    {/* Mobile Close Button */}
+                    <button
+                        onClick={toggleSidebar}
+                        className="md:hidden text-text-secondary hover:text-text-primary"
+                    >
+                        <X size={24} />
                     </button>
                 </div>
-            </nav>
-        </aside>
+
+                <nav className="flex-1 p-6 overflow-y-auto flex flex-col gap-1">
+                    <div className="mb-2">
+                        <NavLink
+                            to="/"
+                            className={({ isActive }) => `
+                                flex items-center gap-3 px-2 py-1 rounded-lg transition-all duration-200 font-medium whitespace-nowrap mb-4
+                                ${isActive && location.pathname === '/'
+                                    ? 'bg-bg-primary text-primary font-semibold'
+                                    : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'}
+                                ${!sidebarOpen ? 'justify-center px-0' : ''}
+                            `}
+                            end
+                            title={!sidebarOpen ? 'Painel Principal' : ''}
+                        >
+                            <LayoutDashboard size={20} />
+                            {sidebarOpen && <span>Painel Principal</span>}
+                        </NavLink>
+
+                        <NavLink
+                            to="/kanban"
+                            className={({ isActive }) => `
+                                flex items-center gap-3 px-2 py-1 rounded-lg transition-all duration-200 font-medium whitespace-nowrap
+                                ${isActive
+                                    ? 'bg-bg-primary text-primary font-semibold'
+                                    : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'}
+                                ${!sidebarOpen ? 'justify-center px-0' : ''}
+                            `}
+                            title={!sidebarOpen ? 'Kanban' : ''}
+                        >
+                            <Trello size={20} />
+                            {sidebarOpen && <span>Kanban</span>}
+                        </NavLink>
+                    </div>
+
+                    {sidebarOpen && (
+                        <div className="bg-bg-tertiary p-3 rounded-xl mb-2 relative border border-border" ref={dropdownRef}>
+                            <label className="block text-[10px] font-bold uppercase text-text-secondary mb-2 tracking-wider">MÓDULO</label>
+                            <div
+                                className={`
+                                    flex items-center justify-between p-2.5 bg-bg-secondary border border-primary rounded-lg cursor-pointer transition-all duration-200 text-text-primary
+                                    ${isDropdownOpen ? 'bg-bg-primary' : ''}
+                                `}
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            >
+                                <div className="flex items-center gap-2 font-medium text-sm">
+                                    <currentModule.icon size={18} />
+                                    <span>{currentModule.name}</span>
+                                </div>
+                                <ChevronDown size={16} className={`text-text-secondary transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                            </div>
+
+                            {isDropdownOpen && (
+                                <div className="absolute top-[calc(100%+5px)] left-0 right-0 bg-bg-secondary border border-border rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                    {modules.map((module, index) => (
+                                        <div
+                                            key={module.name}
+                                            className={`
+                                                flex items-center gap-3 p-3 cursor-pointer transition-colors duration-200 text-text-secondary text-sm
+                                                hover:bg-bg-tertiary hover:text-text-primary
+                                                ${index === selectedModuleIndex ? 'bg-bg-primary text-primary font-medium' : ''}
+                                            `}
+                                            onClick={() => handleModuleSelect(index)}
+                                        >
+                                            <module.icon size={16} />
+                                            <span>{module.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {!sidebarOpen && (
+                        <div className="h-px w-full bg-border my-4"></div>
+                    )}
+
+                    <div className="flex flex-col gap-1">
+                        {sidebarOpen && (
+                            <h3 className="text-xs font-bold text-text-secondary uppercase mt-4 mb-2 ml-4 tracking-wider">{currentModule.name}</h3>
+                        )}
+
+                        <div className="flex flex-col gap-1">
+                            {currentModule.subItems.map((item) => (
+                                <NavLink
+                                    key={item.path}
+                                    to={item.path}
+                                    className={({ isActive }) => `
+                                        flex items-center gap-3 px-2 py-1 rounded-lg transition-all duration-200 font-medium whitespace-nowrap
+                                        ${isActive
+                                            ? 'bg-bg-primary text-primary font-semibold'
+                                            : 'text-text-secondary hover:bg-bg-tertiary hover:text-text-primary'}
+                                        ${!sidebarOpen ? 'justify-center px-0' : ''}
+                                    `}
+                                    title={!sidebarOpen ? item.name : ''}
+                                >
+                                    {item.icon && <item.icon size={20} />}
+                                    {sidebarOpen && <span>{item.name}</span>}
+                                </NavLink>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mt-auto pt-4 border-t border-border flex flex-col gap-1">
+                        <NavLink
+                            to="/ajuda"
+                            className={`
+                                flex items-center gap-3 px-2 py-1 rounded-lg transition-all duration-200 font-medium whitespace-nowrap text-text-secondary hover:bg-bg-tertiary hover:text-text-primary
+                                ${!sidebarOpen ? 'justify-center px-0' : ''}
+                            `}
+                            title={!sidebarOpen ? 'Ajuda' : ''}
+                        >
+                            <HelpCircle size={20} />
+                            {sidebarOpen && <span>Ajuda</span>}
+                        </NavLink>
+
+                        <button
+                            className={`
+                                flex items-center gap-3 px-2 py-1 rounded-lg transition-all duration-200 font-medium whitespace-nowrap text-danger hover:bg-danger/10 w-full
+                                ${!sidebarOpen ? 'justify-center px-0' : ''}
+                            `}
+                            onClick={logout}
+                            title={!sidebarOpen ? 'Sair' : ''}
+                        >
+                            <LogOut size={20} />
+                            {sidebarOpen && <span>Sair</span>}
+                        </button>
+                    </div>
+                </nav>
+            </aside>
+        </>
     );
 };
 
