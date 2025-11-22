@@ -251,7 +251,7 @@ const SalesOrdersPage: React.FC = () => {
       header: 'AÇÕES',
       render: (sale) => (
         <div className="actions-cell">
-          {sale.status === 'CONFIRMED' ? (
+          {sale.status === 'CONFIRMED' || sale.status === 'CANCELLED' ? (
             <button
               className="icon-btn"
               title="Estornar Venda"
@@ -265,7 +265,6 @@ const SalesOrdersPage: React.FC = () => {
                 className="icon-btn"
                 title="Editar"
                 onClick={(e) => handleEdit(sale, e)}
-                disabled={sale.status === 'CANCELLED'}
               >
                 <Edit2 size={16} />
               </button>
@@ -273,7 +272,6 @@ const SalesOrdersPage: React.FC = () => {
                 className="icon-btn delete-btn"
                 title="Excluir"
                 onClick={(e) => handleDeleteClick(sale, e)}
-                disabled={sale.status === 'CANCELLED'}
               >
                 <Trash2 size={16} />
               </button>
@@ -442,7 +440,11 @@ const SalesOrdersPage: React.FC = () => {
         onClose={() => setIsReversalOpen(false)}
         onConfirm={handleConfirmReversal}
         title="Estornar Venda"
-        description={`Tem certeza que deseja estornar a venda #${saleToReverse?.number}? Esta ação irá devolver os itens ao estoque e alterar o status para Pendente.`}
+        description={
+          saleToReverse?.status === 'CONFIRMED'
+            ? `Tem certeza que deseja estornar a venda #${saleToReverse?.number}? Esta ação irá devolver os itens ao estoque e alterar o status para Pendente.`
+            : `Tem certeza que deseja reabrir a venda #${saleToReverse?.number}? O status será alterado para Pendente.`
+        }
         confirmText="Confirmar Estorno"
         cancelText="Cancelar"
         variant="warning"
