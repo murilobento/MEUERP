@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
-import { Plus, Edit2, Trash2, Eye, RefreshCw } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, RefreshCw, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import type { Column } from '../../components/DataTable/DataTable';
 import DataTable from '../../components/DataTable/DataTable';
 import { Sheet } from '../../components/ui/Sheet/Sheet';
@@ -198,6 +200,58 @@ const SalesOrdersPage: React.FC = () => {
     }
   };
 
+  const handleExportPDF = async () => {
+    try {
+      const loadingToast = toast.loading('Gerando PDF...');
+
+      // Buscar todas as vendas com os filtros atuais
+      const response = await saleService.list({
+        ...filters,
+        limit: 10000 // Buscar todas (ou um limite alto suficiente)
+      });
+
+      const salesToExport = response.data || [];
+
+      if (salesToExport.length === 0) {
+        toast.dismiss(loadingToast);
+        toast.error('Nenhuma venda encontrada para exportar.');
+        return;
+      }
+
+      const doc = new jsPDF();
+
+      doc.setFontSize(16);
+      doc.text('Relatório de Vendas', 14, 20);
+
+      doc.setFontSize(10);
+      doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, 28);
+
+      const tableData = salesToExport.map(sale => [
+        `#${sale.number}`,
+        sale.customer.name,
+        new Date(sale.date).toLocaleDateString('pt-BR'),
+        sale.status === 'PENDING' ? 'Pendente' : sale.status === 'CONFIRMED' ? 'Confirmado' : 'Cancelado',
+        `R$ ${Number(sale.total).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+      ]);
+
+      autoTable(doc, {
+        startY: 35,
+        head: [['Pedido', 'Cliente', 'Data', 'Status', 'Total']],
+        body: tableData,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [63, 81, 181] }, // Cor primária aproximada
+      });
+
+      doc.save('vendas_export.pdf');
+
+      toast.dismiss(loadingToast);
+      toast.success('PDF gerado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao exportar PDF:', error);
+      toast.error('Erro ao gerar PDF');
+    }
+  };
+
   const handleView = async (sale: Sale, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
@@ -301,10 +355,16 @@ const SalesOrdersPage: React.FC = () => {
           </div>
           <h1>Gestão de Pedidos de Venda</h1>
         </div>
-        <button className="btn btn-primary" onClick={() => setIsCreateOpen(true)}>
-          <Plus size={20} />
-          Novo Pedido
-        </button>
+        <div className="flex gap-2">
+          <button className="btn btn-secondary" onClick={handleExportPDF}>
+            <Download size={20} />
+            Exportar PDF
+          </button>
+          <button className="btn btn-primary" onClick={() => setIsCreateOpen(true)}>
+            <Plus size={20} />
+            Novo Pedido
+          </button>
+        </div>
       </div>
 
       <FilterBar
