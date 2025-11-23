@@ -65,7 +65,7 @@ function DataTable<T>({
     }
 
     return (
-        <div className="bg-bg-secondary rounded-xl border border-border overflow-hidden">
+        <div className="bg-bg-secondary border overflow-hidden">
             {/* Mobile-friendly horizontal scroll wrapper */}
             <div className="overflow-x-auto -mx-4 sm:mx-0">
                 <div className="inline-block min-w-full align-middle px-4 sm:px-0">
@@ -117,7 +117,7 @@ function DataTable<T>({
             </div>
 
             {pagination && (
-                <div className="p-4 border-t border-border flex justify-between items-center flex-wrap gap-4 max-sm:flex-col max-sm:items-center">
+                <div className="p-4 flex justify-between items-center flex-wrap gap-4 max-sm:flex-col max-sm:items-center">
                     <div className="text-sm text-text-secondary text-center sm:text-left">
                         <span className="hidden sm:inline">Mostrando </span>
                         <strong className="text-text-primary">{((pagination.page - 1) * pagination.limit) + 1}</strong> a <strong className="text-text-primary">{Math.min(pagination.page * pagination.limit, pagination.total)}</strong> de <strong className="text-text-primary">{pagination.total}</strong>

@@ -258,7 +258,7 @@ const SuppliersPage: React.FC = () => {
                 placeholder="Buscar por nome, documento ou email..."
             />
 
-            <div className="flex-1 overflow-hidden rounded-lg border border-border bg-bg-primary">
+            <div className="flex-1 overflow-hidden rounded-lg bg-bg-primary">
                 <DataTable
                     data={suppliers}
                     columns={columns}

@@ -282,7 +282,7 @@ const InventoryPage: React.FC = () => {
                 placeholder="Buscar por nome, EAN ou categoria..."
             />
 
-            <div className="flex-1 overflow-hidden rounded-lg border border-border bg-bg-primary">
+            <div className="flex-1 overflow-hidden rounded-lg bg-bg-primary">
                 <DataTable
                     columns={columns}
                     data={products}
