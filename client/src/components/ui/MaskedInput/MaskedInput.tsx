@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './MaskedInput.css';
+
 
 export type MaskType = 'cpf' | 'cnpj' | 'phone' | 'cep' | 'none';
 
@@ -120,20 +120,20 @@ export const MaskedInput: React.FC<MaskedInputProps> = ({
     };
 
     return (
-        <div className="masked-input-wrapper">
-            {label && <label className="masked-input-label">{label}</label>}
-            <div className={`input-icon-wrapper ${internalError ? 'has-error' : ''}`}>
-                {icon && <span className="input-icon">{icon}</span>}
+        <div className="flex flex-col gap-2">
+            {label && <label className="text-sm font-medium text-text-primary">{label}</label>}
+            <div className="relative flex items-center">
+                {icon && <span className="absolute left-4 text-text-tertiary flex items-center pointer-events-none">{icon}</span>}
                 <input
                     {...rest}
                     type="text"
                     value={value}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`input ${className}`}
+                    className={`w-full px-3 py-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light ${icon ? 'pl-11' : ''} ${internalError ? 'border-danger focus:border-danger focus:ring-danger-light' : ''} ${className}`}
                 />
             </div>
-            {internalError && <span className="input-error">{internalError}</span>}
+            {internalError && <span className="text-xs text-danger mt-1">{internalError}</span>}
         </div>
     );
 };

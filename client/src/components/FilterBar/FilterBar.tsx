@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Filter, Calendar, X, ChevronDown } from 'lucide-react';
-import './FilterBar.css';
+
 
 interface FilterOption {
     label: string;
@@ -46,24 +46,24 @@ const FilterSelect: React.FC<FilterSelectProps> = ({ icon, value, options, onCha
     };
 
     return (
-        <div className="filter-select-container" ref={containerRef}>
+        <div className="relative min-w-[160px] max-md:flex-1" ref={containerRef}>
             <button
-                className={`filter-select-trigger min-h-[44px] sm:min-h-[40px] ${isOpen ? 'active' : ''}`}
+                className={`w-full flex items-center justify-between gap-2 px-4 py-2.5 bg-bg-tertiary border border-transparent rounded-lg text-text-secondary cursor-pointer transition-all text-sm h-[42px] hover:bg-bg-secondary hover:border-border hover:text-text-primary ${isOpen ? 'bg-bg-primary border-primary text-primary shadow-[0_0_0_3px_var(--primary-light)]' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <div className="trigger-content">
+                <div className="flex items-center gap-2">
                     {icon}
                     <span>{selectedOption.label}</span>
                 </div>
-                <ChevronDown size={14} className={`trigger-arrow ${isOpen ? 'rotated' : ''}`} />
+                <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isOpen && (
-                <div className="filter-select-dropdown">
+                <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-bg-primary border border-border rounded-lg shadow-lg z-50 p-1 animate-slideDown min-w-[180px]">
                     {options.map((opt) => (
                         <button
                             key={opt.value}
-                            className={`filter-select-option min-h-[44px] sm:min-h-[40px] ${opt.value === value ? 'selected' : ''}`}
+                            className={`w-full flex items-center px-4 py-2.5 border-none bg-transparent text-text-secondary cursor-pointer rounded-md text-sm text-left transition-all hover:bg-bg-tertiary hover:text-text-primary ${opt.value === value ? 'bg-primary-light text-primary font-medium' : ''}`}
                             onClick={() => handleSelect(opt.value)}
                         >
                             {opt.label}
@@ -125,19 +125,19 @@ const FilterBar: React.FC<FilterBarProps> = ({
     ];
 
     return (
-        <div className="filter-bar flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
-            <div className="filter-search w-full sm:flex-1">
+        <div className="flex flex-wrap gap-4 p-4 bg-bg-secondary rounded-xl border border-border mb-6 items-center max-md:flex-col max-md:items-stretch">
+            <div className="flex-1 min-w-[250px] flex items-center gap-3 px-4 py-2.5 bg-bg-tertiary rounded-lg text-text-secondary border border-transparent transition-all focus-within:border-primary focus-within:text-primary">
                 <Search size={18} />
                 <input
                     type="text"
                     placeholder={placeholder}
                     value={searchTerm}
                     onChange={handleSearch}
-                    className="min-h-[44px] sm:min-h-[40px]"
+                    className="border-none bg-transparent w-full text-text-primary text-sm focus:outline-none min-h-[22px]"
                 />
             </div>
 
-            <div className="filter-actions flex-wrap gap-2 sm:gap-3">
+            <div className="flex gap-3 flex-wrap items-center max-md:justify-between">
                 {onStatusFilter && (
                     <FilterSelect
                         icon={<Filter size={16} />}
@@ -158,25 +158,28 @@ const FilterBar: React.FC<FilterBarProps> = ({
 
                 {/* Render date inputs if 'custom' is selected or if onDateRangeChange is provided without onDateFilter (optional usage) */}
                 {selectedDateRange === 'custom' && onDateFilter && (
-                    <div className="date-range-inputs w-full sm:w-auto flex-col sm:flex-row gap-2">
+                    <div className="flex items-center gap-2 bg-bg-tertiary px-2 py-1 rounded-lg border border-transparent h-[42px] focus-within:border-primary focus-within:ring-2 focus-within:ring-primary-light max-md:w-full max-md:justify-center">
                         <input
                             type="date"
-                            className="filter-date-input min-h-[44px] sm:min-h-[40px]"
-                            onChange={(e) => onDateFilter(`custom_start:${e.target.value}`)}
+                            className="border-none bg-transparent text-text-secondary text-sm p-1 font-inherit cursor-pointer outline-none focus:text-primary"
+                            onChange={(e) => onDateFilter?.(`custom_start:${e.target.value}`)}
                             placeholder="De"
                         />
-                        <span className="date-separator hidden sm:inline">até</span>
+                        <span className="text-text-secondary text-sm font-medium px-1 hidden sm:inline">até</span>
                         <input
                             type="date"
-                            className="filter-date-input min-h-[44px] sm:min-h-[40px]"
-                            onChange={(e) => onDateFilter(`custom_end:${e.target.value}`)}
+                            className="border-none bg-transparent text-text-secondary text-sm p-1 font-inherit cursor-pointer outline-none focus:text-primary"
+                            onChange={(e) => onDateFilter?.(`custom_end:${e.target.value}`)}
                             placeholder="Até"
                         />
                     </div>
                 )}
 
                 {(searchTerm || selectedStatus !== 'all' || selectedDateRange !== 'all') && (
-                    <button className="clear-filters-btn min-h-[44px] sm:min-h-[40px]" onClick={clearFilters}>
+                    <button
+                        className="flex items-center gap-2 px-4 py-2.5 bg-transparent border border-border rounded-lg text-text-secondary cursor-pointer text-sm transition-all h-[42px] hover:bg-bg-tertiary hover:text-danger hover:border-danger"
+                        onClick={clearFilters}
+                    >
                         <X size={16} />
                         Limpar
                     </button>

@@ -46,17 +46,17 @@ const App: React.FC = () => {
                 <Route path="admin/funcoes" element={<RolesPage />} />
 
                 {/* Placeholder para outras rotas */}
-                <Route path="financeiro/*" element={<div className="card">Módulo Financeiro em desenvolvimento</div>} />
-                <Route path="estoque/dashboard" element={<div className="card">Dashboard de Estoque em desenvolvimento</div>} />
+                <Route path="financeiro/*" element={<div className="p-6 bg-bg-primary border border-border rounded-lg shadow-sm">Módulo Financeiro em desenvolvimento</div>} />
+                <Route path="estoque/dashboard" element={<div className="p-6 bg-bg-primary border border-border rounded-lg shadow-sm">Dashboard de Estoque em desenvolvimento</div>} />
                 <Route path="estoque/inventario" element={<InventoryPage />} />
                 <Route path="estoque/fornecedores" element={<SuppliersPage />} />
                 <Route path="estoque/*" element={<Navigate to="/estoque/dashboard" replace />} />
                 <Route path="comercial/clientes" element={<CustomersPage />} />
                 <Route path="comercial/vendas" element={<SalesOrdersPage />} />
-                <Route path="comercial/*" element={<div className="card">Módulo Comercial em desenvolvimento</div>} />
+                <Route path="comercial/*" element={<div className="p-6 bg-bg-primary border border-border rounded-lg shadow-sm">Módulo Comercial em desenvolvimento</div>} />
                 <Route path="kanban" element={<KanbanPage />} />
-                <Route path="configuracoes" element={<div className="card">Configurações em desenvolvimento</div>} />
-                <Route path="ajuda" element={<div className="card">Ajuda em desenvolvimento</div>} />
+                <Route path="configuracoes" element={<div className="p-6 bg-bg-primary border border-border rounded-lg shadow-sm">Configurações em desenvolvimento</div>} />
+                <Route path="ajuda" element={<div className="p-6 bg-bg-primary border border-border rounded-lg shadow-sm">Ajuda em desenvolvimento</div>} />
               </Route>
 
               {/* Rota 404 */}

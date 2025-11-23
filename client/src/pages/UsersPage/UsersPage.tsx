@@ -7,7 +7,7 @@ import type { User } from '../../types/index';
 import FilterBar from '../../components/FilterBar/FilterBar';
 import DataTable, { type Column } from '../../components/DataTable/DataTable';
 import UserForm from './UserForm';
-import './UsersPage.css';
+
 import { Sheet } from '../../components/ui/Sheet/Sheet';
 import { AlertDialog } from '../../components/ui/AlertDialog/AlertDialog';
 import UserDetail from './UserDetail';
@@ -159,10 +159,10 @@ const UsersPage: React.FC = () => {
 
     const getRoleBadgeClass = (role: string) => {
         switch (role) {
-            case 'ADMIN': return 'badge-primary';
-            case 'MANAGER': return 'badge-info';
-            case 'EDITOR': return 'badge-warning';
-            default: return 'badge-secondary';
+            case 'ADMIN': return 'bg-primary-light text-primary';
+            case 'MANAGER': return 'bg-info-light text-info';
+            case 'EDITOR': return 'bg-warning-light text-warning';
+            default: return 'bg-bg-tertiary text-text-secondary';
         }
     };
 
@@ -180,13 +180,13 @@ const UsersPage: React.FC = () => {
             key: 'name',
             header: 'USUÁRIO',
             render: (user) => (
-                <div className="user-cell">
-                    <div className="user-avatar">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-semibold text-sm">
                         {user.name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="user-info">
-                        <span className="user-name">{user.name}</span>
-                        <span className="user-email">{user.email}</span>
+                    <div className="flex flex-col">
+                        <span className="font-medium text-text-primary leading-tight">{user.name}</span>
+                        <span className="text-sm text-text-secondary leading-tight">{user.email}</span>
                     </div>
                 </div>
             )
@@ -195,7 +195,7 @@ const UsersPage: React.FC = () => {
             key: 'status',
             header: 'STATUS',
             render: (user) => (
-                <span className={`status-badge ${user.status === 'ACTIVE' ? 'active' : 'inactive'}`}>
+                <span className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-full ${user.status === 'ACTIVE' ? 'bg-success-light text-success' : 'bg-danger-light text-danger'}`}>
                     {user.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                 </span>
             )
@@ -204,7 +204,7 @@ const UsersPage: React.FC = () => {
             key: 'role',
             header: 'NÍVEL DE PERMISSÃO',
             render: (user) => (
-                <span className={`badge ${getRoleBadgeClass(user.role)}`}>
+                <span className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-full ${getRoleBadgeClass(user.role)}`}>
                     {getRoleLabel(user.role)}
                 </span>
             )
@@ -231,23 +231,23 @@ const UsersPage: React.FC = () => {
             key: 'actions',
             header: 'AÇÕES',
             render: (user) => (
-                <div className="actions-cell">
+                <div className="flex gap-2 justify-end">
                     <button
-                        className="icon-btn"
+                        className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary"
                         title="Editar"
                         onClick={(e) => handleEdit(user, e)}
                     >
                         <Edit2 size={16} />
                     </button>
                     <button
-                        className="icon-btn"
+                        className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-bg-secondary hover:text-text-primary"
                         title="Visualizar"
                         onClick={(e) => handleView(user, e)}
                     >
                         <Eye size={16} />
                     </button>
                     <button
-                        className="icon-btn delete-btn"
+                        className="w-8 h-8 flex items-center justify-center border-none bg-transparent text-text-secondary rounded-md cursor-pointer transition-all hover:bg-danger-light hover:text-danger"
                         title="Excluir"
                         onClick={(e) => handleDeleteClick(user, e)}
                     >

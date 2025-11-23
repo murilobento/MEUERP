@@ -1,6 +1,6 @@
 import React from 'react';
 import { Shield, Check, X } from 'lucide-react';
-import './RolesPage.css';
+
 
 interface Permission {
     module: string;
@@ -40,35 +40,35 @@ const RolesPage: React.FC = () => {
     ];
 
     return (
-        <div className="page-container">
-            <div className="page-header">
-                <div className="page-header-content">
-                    <div className="breadcrumb">
+        <div className="p-6 h-full flex flex-col overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-border">
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 text-sm text-text-secondary mb-1">
                         <span>Administrativo</span>
                         <span>/</span>
                         <span>Funções e Acesso</span>
                     </div>
-                    <h1>Controle de Acesso</h1>
+                    <h1 className="text-2xl font-semibold text-text-primary m-0">Controle de Acesso</h1>
                 </div>
             </div>
 
-            <div className="card">
-                <div className="roles-header">
+            <div className="flex-1 overflow-hidden rounded-lg border border-border bg-bg-primary flex flex-col">
+                <div className="flex items-center gap-4 p-6 border-b border-border">
                     <Shield size={24} className="text-primary" />
                     <div>
-                        <h2>Matriz de Permissões</h2>
-                        <p>Visualize o que cada perfil de usuário pode acessar no sistema.</p>
+                        <h2 className="m-0 text-lg font-semibold text-text-primary">Matriz de Permissões</h2>
+                        <p className="mt-1 text-sm text-text-secondary">Visualize o que cada perfil de usuário pode acessar no sistema.</p>
                     </div>
                 </div>
 
-                <div className="table-container">
-                    <table className="roles-table">
+                <div className="overflow-auto flex-1">
+                    <table className="w-full border-collapse">
                         <thead>
                             <tr>
-                                <th>Módulo / Ação</th>
+                                <th className="p-4 border-b border-border bg-bg-tertiary font-semibold text-text-secondary text-left sticky top-0 z-10">Módulo / Ação</th>
                                 {roles.map(role => (
-                                    <th key={role.key} className="text-center">
-                                        <span className={`badge badge-${role.color}`}>
+                                    <th key={role.key} className="p-4 border-b border-border bg-bg-tertiary font-semibold text-text-secondary text-center sticky top-0 z-10">
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-${role.color}-light text-${role.color}`}>
                                             {role.label}
                                         </span>
                                     </th>
@@ -77,19 +77,19 @@ const RolesPage: React.FC = () => {
                         </thead>
                         <tbody>
                             {permissions.map((perm, index) => (
-                                <tr key={index}>
-                                    <td>
-                                        <div className="permission-name">
-                                            <span className="module-tag">{perm.module}</span>
-                                            <span>{perm.action}</span>
+                                <tr key={index} className="hover:bg-bg-tertiary transition-colors">
+                                    <td className="p-4 border-b border-border">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xs uppercase tracking-wider text-text-secondary font-semibold">{perm.module}</span>
+                                            <span className="text-text-primary">{perm.action}</span>
                                         </div>
                                     </td>
                                     {roles.map(role => (
-                                        <td key={role.key} className="text-center">
+                                        <td key={role.key} className="p-4 border-b border-border text-center">
                                             {(perm as any)[role.key] ? (
-                                                <Check size={20} className="text-success icon-center" />
+                                                <Check size={20} className="text-success mx-auto block" />
                                             ) : (
-                                                <X size={20} className="text-danger icon-center" />
+                                                <X size={20} className="text-danger mx-auto block" />
                                             )}
                                         </td>
                                     ))}

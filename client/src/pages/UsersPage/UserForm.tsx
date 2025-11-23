@@ -4,7 +4,7 @@ import Select from 'react-select';
 import type { User as UserType, Department } from '../../types/index';
 import { Switch } from '../../components/ui/Switch/Switch';
 import { departmentService } from '../../services/departmentService';
-import './UserForm.css';
+
 
 interface UserFormProps {
     initialData?: UserType | null;
@@ -144,50 +144,50 @@ const UserForm: React.FC<UserFormProps> = ({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="user-form">
-            <div className="form-grid">
-                <div className="form-group span-2">
-                    <label>Nome Completo</label>
-                    <div className="input-icon-wrapper">
-                        <User size={16} />
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 overflow-y-auto flex-1">
+                <div className="flex flex-col gap-1.5 col-span-1 sm:col-span-2">
+                    <label className="text-sm font-medium text-text-primary">Nome Completo</label>
+                    <div className="relative flex items-center">
+                        <User size={16} className="absolute left-3 text-text-tertiary pointer-events-none" />
                         <input
                             type="text"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
-                            className="input"
+                            className="w-full pl-10 pr-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                             placeholder="Nome do usuário"
                             required
                         />
                     </div>
                 </div>
 
-                <div className="form-group">
-                    <label>E-mail</label>
-                    <div className="input-icon-wrapper">
-                        <Mail size={16} />
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium text-text-primary">E-mail</label>
+                    <div className="relative flex items-center">
+                        <Mail size={16} className="absolute left-3 text-text-tertiary pointer-events-none" />
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="input"
+                            className="w-full pl-10 pr-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                             placeholder="email@empresa.com"
                             required
                         />
                     </div>
                 </div>
 
-                <div className="form-group">
-                    <label>Senha</label>
-                    <div className="input-icon-wrapper">
-                        <Lock size={16} />
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium text-text-primary">Senha</label>
+                    <div className="relative flex items-center">
+                        <Lock size={16} className="absolute left-3 text-text-tertiary pointer-events-none" />
                         <input
                             type="password"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="input"
+                            className="w-full pl-10 pr-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                             placeholder={initialData ? "Deixe em branco para manter" : "Senha segura"}
                             required={!initialData}
                             minLength={6}
@@ -195,15 +195,15 @@ const UserForm: React.FC<UserFormProps> = ({
                     </div>
                 </div>
 
-                <div className="form-group span-2">
-                    <label>Função (Role)</label>
-                    <div className="input-icon-wrapper">
-                        <Shield size={16} />
+                <div className="flex flex-col gap-1.5 col-span-1 sm:col-span-2">
+                    <label className="text-sm font-medium text-text-primary">Função (Role)</label>
+                    <div className="relative flex items-center">
+                        <Shield size={16} className="absolute left-3 text-text-tertiary pointer-events-none z-10" />
                         <select
                             name="role"
                             value={formData.role}
                             onChange={handleChange}
-                            className="input"
+                            className="w-full pl-10 pr-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none appearance-none cursor-pointer"
                         >
                             <option value="ADMIN">Administrador</option>
                             <option value="MANAGER">Gerente</option>
@@ -213,15 +213,14 @@ const UserForm: React.FC<UserFormProps> = ({
                     </div>
                 </div>
 
-                <div className="form-group span-2">
-                    <label>Departamentos</label>
+                <div className="flex flex-col gap-1.5 col-span-1 sm:col-span-2">
+                    <label className="text-sm font-medium text-text-primary">Departamentos</label>
                     <Select
                         isMulti
                         name="departments"
                         options={departmentOptions}
                         value={selectedDepartments}
                         onChange={handleDepartmentChange}
-                        className="react-select-container"
                         classNamePrefix="react-select"
                         placeholder="Selecione..."
                         styles={customStyles}
@@ -229,8 +228,8 @@ const UserForm: React.FC<UserFormProps> = ({
                     />
                 </div>
 
-                <div className="form-group span-2">
-                    <label>Status</label>
+                <div className="flex flex-col gap-1.5 col-span-1 sm:col-span-2">
+                    <label className="text-sm font-medium text-text-primary">Status</label>
                     <div style={{ marginTop: '0.5rem' }}>
                         <Switch
                             checked={formData.status === 'ACTIVE'}
@@ -241,11 +240,19 @@ const UserForm: React.FC<UserFormProps> = ({
                 </div>
             </div>
 
-            <div className="form-actions">
-                <button type="button" className="btn btn-secondary" onClick={onCancel}>
+            <div className="flex justify-end gap-3 p-4 border-t border-border bg-bg-primary mt-auto">
+                <button
+                    type="button"
+                    className="px-4 py-2 rounded-lg font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-transparent border border-border text-text-primary hover:bg-bg-secondary"
+                    onClick={onCancel}
+                >
                     Cancelar
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={loading}>
+                <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-primary text-white hover:bg-primary-hover"
+                    disabled={loading}
+                >
                     {loading ? 'Salvando...' : initialData ? 'Atualizar' : 'Criar Usuário'}
                 </button>
             </div>

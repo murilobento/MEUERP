@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import { companyService } from '../../../services/companyService';
 import { MaskedInput } from '../../../components/ui/MaskedInput/MaskedInput';
 import { validateCNPJ, validatePhone, validateCEP } from '../../../utils/masks';
-import './CompanySettings.css';
+
 
 interface CompanyFormData {
     name: string;
@@ -205,18 +205,18 @@ const CompanySettings: React.FC = () => {
     };
 
     return (
-        <div className="page-container">
-            <div className="page-header">
-                <div className="page-header-content">
-                    <div className="breadcrumb">
+        <div className="p-6 h-full flex flex-col overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-border">
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 text-sm text-text-secondary mb-1">
                         <span>Administrativo</span>
                         <span>/</span>
                         <span>Configurações</span>
                     </div>
-                    <h1>Dados da Empresa</h1>
+                    <h1 className="text-2xl font-semibold text-text-primary m-0">Dados da Empresa</h1>
                 </div>
                 <button
-                    className="btn btn-primary"
+                    className="px-4 py-2 rounded-lg font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-primary text-white hover:bg-primary-hover flex items-center gap-2"
                     onClick={handleSubmit}
                     disabled={loading}
                 >
@@ -225,27 +225,27 @@ const CompanySettings: React.FC = () => {
                 </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="settings-form">
-                <div className="card settings-card">
+            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
+                <div className="bg-bg-primary rounded-lg border border-border p-8 max-md:p-4">
                     {/* Informações Básicas */}
-                    <div className="settings-section">
-                        <div className="section-header">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-3 mb-2 pb-4 border-b border-border text-primary">
                             <Building size={20} />
-                            <h2>Informações Básicas</h2>
+                            <h2 className="text-lg font-semibold m-0 text-text-primary">Informações Básicas</h2>
                         </div>
-                        <div className="form-grid">
-                            <div className="form-group span-2">
-                                <label>Razão Social / Nome Fantasia</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-2 md:col-span-2">
+                                <label className="text-sm font-medium text-text-secondary">Razão Social / Nome Fantasia</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    className="input"
+                                    className="w-full px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                                     placeholder="Nome da sua empresa"
                                 />
                             </div>
-                            <div className="form-group">
+                            <div className="flex flex-col gap-2">
                                 <MaskedInput
                                     label="CNPJ"
                                     name="cnpj"
@@ -256,16 +256,16 @@ const CompanySettings: React.FC = () => {
                                     placeholder="00.000.000/0001-00"
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Website</label>
-                                <div className="input-icon-wrapper">
-                                    <Globe size={16} />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium text-text-secondary">Website</label>
+                                <div className="relative flex items-center">
+                                    <Globe size={16} className="absolute left-3 text-text-secondary pointer-events-none" />
                                     <input
                                         type="text"
                                         name="website"
                                         value={formData.website}
                                         onChange={handleChange}
-                                        className="input"
+                                        className="w-full pl-10 pr-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                                         placeholder="www.exemplo.com"
                                     />
                                 </div>
@@ -273,30 +273,30 @@ const CompanySettings: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="separator" />
+                    <div className="h-px bg-border my-8 w-full" />
 
                     {/* Contato */}
-                    <div className="settings-section">
-                        <div className="section-header">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-3 mb-2 pb-4 border-b border-border text-primary">
                             <Phone size={20} />
-                            <h2>Contato</h2>
+                            <h2 className="text-lg font-semibold m-0 text-text-primary">Contato</h2>
                         </div>
-                        <div className="form-grid">
-                            <div className="form-group">
-                                <label>E-mail Principal</label>
-                                <div className="input-icon-wrapper">
-                                    <Mail size={16} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium text-text-secondary">E-mail Principal</label>
+                                <div className="relative flex items-center">
+                                    <Mail size={16} className="absolute left-3 text-text-secondary pointer-events-none" />
                                     <input
                                         type="email"
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="input"
+                                        className="w-full pl-10 pr-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                                         placeholder="contato@empresa.com"
                                     />
                                 </div>
                             </div>
-                            <div className="form-group">
+                            <div className="flex flex-col gap-2">
                                 <MaskedInput
                                     label="Telefone / WhatsApp"
                                     name="phone"
@@ -311,16 +311,16 @@ const CompanySettings: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="separator" />
+                    <div className="h-px bg-border my-8 w-full" />
 
                     {/* Endereço */}
-                    <div className="settings-section">
-                        <div className="section-header">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-3 mb-2 pb-4 border-b border-border text-primary">
                             <MapPin size={20} />
-                            <h2>Endereço</h2>
+                            <h2 className="text-lg font-semibold m-0 text-text-primary">Endereço</h2>
                         </div>
-                        <div className="form-grid">
-                            <div className="form-group">
+                        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                            <div className="flex flex-col gap-2 md:col-span-2">
                                 <MaskedInput
                                     label="CEP"
                                     name="address.zipCode"
@@ -333,69 +333,69 @@ const CompanySettings: React.FC = () => {
                                 />
                                 {loadingCep && <span className="text-sm text-blue-500 mt-1">Buscando endereço...</span>}
                             </div>
-                            <div className="form-group span-2">
-                                <label>Rua / Avenida</label>
+                            <div className="flex flex-col gap-2 md:col-span-4">
+                                <label className="text-sm font-medium text-text-secondary">Rua / Avenida</label>
                                 <input
                                     type="text"
                                     name="address.street"
                                     value={formData.address.street}
                                     onChange={handleChange}
-                                    className="input"
+                                    className="w-full px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                                     placeholder="Nome da rua"
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Número</label>
+                            <div className="flex flex-col gap-2 md:col-span-2">
+                                <label className="text-sm font-medium text-text-secondary">Número</label>
                                 <input
                                     type="text"
                                     name="address.number"
                                     value={formData.address.number}
                                     onChange={handleChange}
-                                    className="input"
+                                    className="w-full px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                                     placeholder="123"
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Complemento</label>
+                            <div className="flex flex-col gap-2 md:col-span-2">
+                                <label className="text-sm font-medium text-text-secondary">Complemento</label>
                                 <input
                                     type="text"
                                     name="address.complement"
                                     value={formData.address.complement}
                                     onChange={handleChange}
-                                    className="input"
+                                    className="w-full px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                                     placeholder="Sala, Bloco, etc."
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Bairro</label>
+                            <div className="flex flex-col gap-2 md:col-span-2">
+                                <label className="text-sm font-medium text-text-secondary">Bairro</label>
                                 <input
                                     type="text"
                                     name="address.neighborhood"
                                     value={formData.address.neighborhood}
                                     onChange={handleChange}
-                                    className="input"
+                                    className="w-full px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                                     placeholder="Bairro"
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Cidade</label>
+                            <div className="flex flex-col gap-2 md:col-span-4">
+                                <label className="text-sm font-medium text-text-secondary">Cidade</label>
                                 <input
                                     type="text"
                                     name="address.city"
                                     value={formData.address.city}
                                     onChange={handleChange}
-                                    className="input"
+                                    className="w-full px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                                     placeholder="Cidade"
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Estado (UF)</label>
+                            <div className="flex flex-col gap-2 md:col-span-2">
+                                <label className="text-sm font-medium text-text-secondary">Estado (UF)</label>
                                 <input
                                     type="text"
                                     name="address.state"
                                     value={formData.address.state}
                                     onChange={handleChange}
-                                    className="input"
+                                    className="w-full px-3 py-2.5 bg-bg-secondary border border-border rounded-lg text-text-primary text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary-light outline-none"
                                     placeholder="UF"
                                     maxLength={2}
                                 />

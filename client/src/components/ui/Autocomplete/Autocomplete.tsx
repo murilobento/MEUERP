@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import './Autocomplete.css';
+
 
 interface Option {
     value: string | number;
@@ -95,20 +95,13 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
     };
 
     return (
-        <div className={`autocomplete-wrapper ${className}`} ref={wrapperRef}>
-            <div className="autocomplete-input-container">
-                {icon && <span className="autocomplete-icon">{icon}</span>}
+        <div className={`relative w-full ${className}`} ref={wrapperRef}>
+            <div className="relative flex items-center">
+                {icon && <span className="absolute left-3 text-text-tertiary pointer-events-none z-10">{icon}</span>}
                 <input
                     type="text"
-                    className="autocomplete-input"
-                    value={isOpen ? (searchTerm || displayValue) : displayValue} // Show search term when open/typing, else display value
-                    // Actually, better logic:
-                    // When typing (isOpen), show what user types (searchTerm or displayValue if searchTerm empty?)
-                    // Let's simplify:
-                    // When open, we are editing.
-                    // But if we just clicked, we might want to see the current value.
-                    // Let's use a single controlled input.
-                    // value={displayValue}
+                    className="w-full px-3 py-2.5 text-sm border border-border rounded-md bg-bg-primary text-text-primary transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
+                    value={isOpen ? (searchTerm || displayValue) : displayValue}
                     onChange={handleInputChange}
                     onFocus={handleFocus}
                     placeholder={placeholder}
@@ -116,31 +109,31 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
                     style={{ paddingLeft: icon ? '2.5rem' : '0.875rem' }}
                 />
                 {value && !disabled && (
-                    <button type="button" className="clear-btn" onClick={handleClear}>
+                    <button type="button" className="absolute right-2 bg-transparent border-none text-text-tertiary cursor-pointer p-1 rounded-full flex items-center justify-center hover:bg-bg-tertiary hover:text-text-secondary" onClick={handleClear}>
                         <X size={14} />
                     </button>
                 )}
             </div>
 
             {isOpen && !disabled && (
-                <div className="autocomplete-dropdown">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-bg-primary border border-border rounded-md shadow-lg max-h-[200px] overflow-y-auto z-50 animate-fadeIn">
                     {filteredOptions.length > 0 ? (
                         filteredOptions.map((option) => (
                             <div
                                 key={option.value}
-                                className={`autocomplete-option ${option.value === value ? 'selected' : ''}`}
+                                className={`px-4 py-2.5 text-sm text-text-primary cursor-pointer transition-colors hover:bg-bg-tertiary ${option.value === value ? 'bg-bg-tertiary' : ''}`}
                                 onClick={() => handleSelect(option)}
                             >
                                 <div>{option.label}</div>
                                 {option.subLabel && (
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                                    <div className="text-xs text-text-tertiary">
                                         {option.subLabel}
                                     </div>
                                 )}
                             </div>
                         ))
                     ) : (
-                        <div className="no-options">Nenhum resultado encontrado</div>
+                        <div className="p-4 text-center text-text-secondary text-sm">Nenhum resultado encontrado</div>
                     )}
                 </div>
             )}
